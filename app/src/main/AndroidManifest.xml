@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kmzbrnoI.hjoprcsdebugger">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-feature android:name="android.hardware.wifi" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

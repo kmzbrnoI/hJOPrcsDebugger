@@ -1,0 +1,66 @@
+package kmzbrnoI.hjoprcsdebugger.storage
+
+import android.content.SharedPreferences
+import android.util.Log
+import kmzbrnoI.hjoprcsdebugger.models.Server
+import java.util.ArrayList
+
+class ServerDb(internal var preferences: SharedPreferences?) {
+    var found: ArrayList<Server> = ArrayList()
+    var stored: ArrayList<Server> = ArrayList()
+
+    companion object {
+        var instance: ServerDb? = null
+    }
+
+    init {
+        this.loadServers()
+    }
+
+    fun loadServers() {
+        if (!preferences?.contains("StoredServers")!!) return
+        val serverString = preferences?.getString("StoredServers", "")!!.split("\\|".toRegex())
+            .dropLastWhile { it.isEmpty() }
+            .toTypedArray()
+
+        for (tmpS in serverString) {
+            try {
+                val attributes =
+                    tmpS.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                if (attributes.size > 5) {
+                    val tmpServer = Server(
+                        attributes[0], attributes[1], Integer.parseInt(attributes[2]), false,
+                        attributes[3], attributes[4], attributes[5]
+                    )
+                    tmpServer.active = true
+                    if (!stored.contains(tmpServer)) stored.add(tmpServer)
+                }
+            } catch (e: Exception) {
+                Log.e("ServerDb", "loadServers: " + e.message)
+            }
+
+        }
+    }
+
+    fun addFoundServer(server: Server) {
+        this.found.add(server)
+
+        // transfer password from stored servers
+        if (server.username.isEmpty() && server.password.isEmpty()) {
+            for (s in stored) {
+                if (server.host.equals(s.host) && server.port == s.port) {
+                    server.username = s.username
+                    server.password = s.password
+                    break
+                }
+            }
+        }
+    }
+
+    fun isFoundServer(host: String, port: Int): Boolean {
+        for (s in found)
+            if (s.host.equals(host) && s.port == port)
+                return true
+        return false
+    }
+}
