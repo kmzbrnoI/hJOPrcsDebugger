@@ -12,17 +12,19 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.constants.FOUND_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.constants.REQUEST_WIFI_PERMISSION
+import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.helpers.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.network.UDPDiscover
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
+import kotlinx.android.synthetic.main.select_server.view.*
 import java.util.ArrayList
-import kotlinx.android.synthetic.main.select_server.*
-
 
 class SelectServer : Fragment(), UDPDiscoverResponse {
     lateinit var foundServersAdapter: ArrayAdapter<String>
+    lateinit var storedServersAdapter: ArrayAdapter<String>
 
     var found: ArrayList<String> = ArrayList()
+    var stored: ArrayList<String> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,6 +57,12 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
             )
             found_servers_list_view.adapter = foundServersAdapter
 
+            storedServersAdapter = ArrayAdapter(
+                context,
+                android.R.layout.simple_list_item_1, android.R.id.text1, stored
+            )
+            stored_servers_list_view.adapter = storedServersAdapter
+
             reload_servers.setOnClickListener {
                 discoverServers()
             }
@@ -84,6 +92,14 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
         udpDiscover.execute()
     }
 
+    fun updateStoredServers() {
+        stored.clear()
+        for (s in ServerDb.instance?.stored!!)
+            stored.add(s.name + "\t" + s.host + "\n" + s.type)
+
+        storedServersAdapter.notifyDataSetChanged()
+    }
+
     fun updateFoundServers() {
         found.clear()
         for (s in ServerDb.instance?.found!!) {
@@ -98,6 +114,9 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
         when (output) {
             FOUND_SERVERS_RELOAD -> {
                 updateFoundServers()
+            }
+            STORED_SERVERS_RELOAD -> {
+                updateStoredServers()
             }
         }
     }
