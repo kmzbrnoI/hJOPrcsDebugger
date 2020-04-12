@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.constants.FOUND_SERVERS_RELOAD
@@ -15,8 +16,12 @@ import kmzbrnoI.hjoprcsdebugger.helpers.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.network.UDPDiscover
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import java.util.ArrayList
+import kotlinx.android.synthetic.main.select_server.*
+
 
 class SelectServer : Fragment(), UDPDiscoverResponse {
+    lateinit var foundServersAdapter: ArrayAdapter<String>
+
     var found: ArrayList<String> = ArrayList()
 
     override fun onCreateView(
@@ -25,7 +30,6 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
         savedInstanceState: Bundle?
     ): View? {
         retainInstance = true
-        val view = inflater.inflate(R.layout.select_server, container, false)
 
         val sp = context?.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
@@ -44,8 +48,21 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
             }
         }
 
+        val view = inflater.inflate(R.layout.select_server, container, false).apply {
+            foundServersAdapter = ArrayAdapter(
+                context,
+                android.R.layout.simple_list_item_1, android.R.id.text1, found
+            )
+            found_servers_list_view.adapter = foundServersAdapter
+
+            reload_servers.setOnClickListener {
+                discoverServers()
+            }
+        }
+
         return view
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -74,7 +91,7 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
             found.add(s.name + "\t" + s.host + "\n" + s.type + " \t" + statusText)
         }
 
-        // fAdapter.notifyDataSetChanged()
+        foundServersAdapter.notifyDataSetChanged()
     }
 
     override fun discoveringFinished(output: Int) {

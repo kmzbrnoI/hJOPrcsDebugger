@@ -46,9 +46,8 @@ class UDPDiscover(internal var mWifi: WifiManager) : AsyncTask<String, Server, S
                 }
             }
         } catch (e: SocketTimeoutException) {
-            Log.i("listening exception", "S: time out '$e'") // timeout OK
+            Log.d("listening exception", "S: time out '$e'") // timeout OK
         }
-
     }
 
     private fun parseServerMessage(message: String): Server? {

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">hJOPrcsDebugger</string>
+    <string name="reload_button">Reload servers</string>
 </resources>
