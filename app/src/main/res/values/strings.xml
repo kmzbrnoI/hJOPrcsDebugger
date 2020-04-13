@@ -3,4 +3,7 @@
     <string name="reload_button">Reload servers</string>
     <string name="discovered_servers">Discovered servers</string>
     <string name="saved_servers">Saved servers</string>
+    <string name="conn_server_offline">Server is offline, really connect to server?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
