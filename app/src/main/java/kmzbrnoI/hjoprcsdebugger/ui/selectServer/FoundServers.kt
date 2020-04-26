@@ -16,24 +16,16 @@ import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.constants.FOUND_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.constants.REQUEST_WIFI_PERMISSION
-import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.helpers.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.network.UDPDiscover
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
-import kotlinx.android.synthetic.main.select_server.view.*
+import kotlinx.android.synthetic.main.select_found_server.view.*
 import java.util.ArrayList
 
-class SelectServer : Fragment(), UDPDiscoverResponse {
+class FoundServers : Fragment(), UDPDiscoverResponse {
     lateinit var foundServersAdapter: ArrayAdapter<String>
-    lateinit var storedServersAdapter: ArrayAdapter<String>
 
     var found: ArrayList<String> = ArrayList()
-    var stored: ArrayList<String> = ArrayList()
-
-    enum class SourceServerType {
-        FOUND,
-        STORED
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +54,7 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
             }
         }
 
-        val view = inflater.inflate(R.layout.select_server, container, false).apply {
+        val view = inflater.inflate(R.layout.select_found_server, container, false).apply {
             foundServersAdapter = ArrayAdapter(
                 context,
                 android.R.layout.simple_list_item_1, android.R.id.text1, found
@@ -73,39 +65,14 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
             found_servers_list_view.setOnItemClickListener { _, _, position, _ ->
                 ServerDb.instance?.let { ServerDbInstance ->
                     if (ServerDbInstance.found[position].active) {
-                        connectToServer(context, SourceServerType.FOUND, position)
+                        connectToServer(context, position)
                     } else {
                         AlertDialog.Builder(context)
                             .setMessage(R.string.conn_server_offline)
                             .setPositiveButton(
                                 getString(R.string.yes)
                             ) { _, _ ->
-                                connectToServer(context, SourceServerType.FOUND, position)
-                            }
-                            .setNegativeButton(
-                                getString(R.string.no)
-                            ) { _, _ -> }.show()
-                    }
-                }
-            }
-
-            storedServersAdapter = ArrayAdapter(
-                context,
-                android.R.layout.simple_list_item_1, android.R.id.text1, stored
-            )
-            stored_servers_list_view.adapter = storedServersAdapter
-
-            stored_servers_list_view.setOnItemClickListener { _, _, position, _ ->
-                ServerDb.instance?.let { ServerDbInstance ->
-                    if (ServerDbInstance.found[position].active) {
-                        connectToServer(context, SourceServerType.STORED, position)
-                    } else {
-                        AlertDialog.Builder(context)
-                            .setMessage(R.string.conn_server_offline)
-                            .setPositiveButton(
-                                getString(R.string.yes)
-                            ) { _, _ ->
-                                connectToServer(context, SourceServerType.STORED, position)
+                                connectToServer(context, position)
                             }
                             .setNegativeButton(
                                 getString(R.string.no)
@@ -121,7 +88,6 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
 
         return view
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -144,23 +110,11 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
         udpDiscover.execute()
     }
 
-    private fun connectToServer(context: Context, serverType: SourceServerType, index: Int) {
+    private fun connectToServer(context: Context, index: Int) {
         val intent = Intent(context, ServerConnectorActivity::class.java)
-        intent.putExtra(
-            "serverType",
-            if (serverType == SourceServerType.FOUND) "found" else "stored"
-        )
+        intent.putExtra("serverType", "found")
         intent.putExtra("serverId", index)
         startActivity(intent)
-    }
-
-
-    private fun updateStoredServers() {
-        stored.clear()
-        for (s in ServerDb.instance?.stored!!)
-            stored.add(s.name + "\t" + s.host + "\n" + s.type)
-
-        storedServersAdapter.notifyDataSetChanged()
     }
 
     private fun updateFoundServers() {
@@ -177,9 +131,6 @@ class SelectServer : Fragment(), UDPDiscoverResponse {
         when (output) {
             FOUND_SERVERS_RELOAD -> {
                 updateFoundServers()
-            }
-            STORED_SERVERS_RELOAD -> {
-                updateStoredServers()
             }
         }
     }
