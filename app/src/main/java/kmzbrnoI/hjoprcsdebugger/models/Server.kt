@@ -4,7 +4,7 @@ import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 
 class Server {
     var name: String = ""
-    var host: String? = null
+    var host: String = ""
     var port: Int = 0
     var type: String = ""
     var active: Boolean = false
@@ -43,6 +43,11 @@ class Server {
         this.active = parsed.get(6) == "on"
         this.username = ""
         this.password = ""
+    }
+
+    fun getSaveDataString(): String {
+        return (this.name + ";" + this.host + ";" + this.port + ";"
+                + this.type + ";" + this.username + ";" + this.password)
     }
 
     override fun equals(other: Any?): Boolean {

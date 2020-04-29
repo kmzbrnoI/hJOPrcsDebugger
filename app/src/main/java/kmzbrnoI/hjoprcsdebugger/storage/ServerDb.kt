@@ -50,6 +50,23 @@ class ServerDb(internal var preferences: SharedPreferences?) {
         }
     }
 
+    fun saveServers() {
+        var saveString = ""
+        for (s in this.stored)
+            saveString = saveString + s.getSaveDataString() + "|"
+
+        val editor = preferences?.edit()
+        editor?.remove("StoredServers")
+        editor?.clear()
+        editor?.putString("StoredServers", saveString)
+        editor?.commit()
+    }
+
+    fun addStoredServer(server: Server) {
+        this.stored.add(server)
+        this.saveServers()
+    }
+
     fun addFoundServer(server: Server) {
         this.found.add(server)
 
@@ -70,5 +87,22 @@ class ServerDb(internal var preferences: SharedPreferences?) {
             if (s.host.equals(host) && s.port == port)
                 return true
         return false
+    }
+
+    fun isStoredServer(host: String, port: Int): Boolean {
+        for (s in stored)
+            if (s.host.equals(host) && s.port == port)
+                return true
+        return false
+    }
+
+    fun transferLoginToSaved(found: Server) {
+        for (s in stored) {
+            if (s !== found && s.host.equals(found.host) && s.port == found.port) {
+                s.username = found.username
+                s.password = found.password
+            }
+        }
+        this.saveServers()
     }
 }
