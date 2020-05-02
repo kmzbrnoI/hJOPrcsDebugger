@@ -27,11 +27,6 @@ class SelectServerActivity : AppCompatActivity() {
         setContentView(R.layout.server_pager_activity)
 
         if (savedInstanceState == null) {
-            val fragment = FoundServers()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.servers_pager, fragment)
-                .commit()
-
             // The pager adapter, which provides the pages to the view pager widget.
             val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
             servers_pager.adapter = pagerAdapter

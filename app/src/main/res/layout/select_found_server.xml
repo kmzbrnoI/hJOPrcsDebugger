@@ -3,7 +3,6 @@
     android:id="@+id/select_server"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="2"
     android:orientation="vertical">
 
     <Button
