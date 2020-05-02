@@ -31,7 +31,7 @@ class StoredServers : Fragment(), UDPDiscoverResponse {
 
         val sp = context?.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
-        ServerDb.instance = ServerDb(sp)
+        ServerDb.getInstance(sp)
 
         val view = inflater.inflate(R.layout.select_stored_server, container, false).apply {
             storedServersAdapter = ArrayAdapter(
@@ -41,7 +41,7 @@ class StoredServers : Fragment(), UDPDiscoverResponse {
             stored_servers_list_view.adapter = storedServersAdapter
 
             stored_servers_list_view.setOnItemClickListener { _, _, position, _ ->
-                ServerDb.instance?.let { ServerDbInstance ->
+                ServerDb.getInstance().let { ServerDbInstance ->
                     if (ServerDbInstance.found[position].active) {
                         connectToServer(context, position)
                     } else {
@@ -72,7 +72,7 @@ class StoredServers : Fragment(), UDPDiscoverResponse {
 
     private fun updateStoredServers() {
         stored.clear()
-        for (s in ServerDb.instance?.stored!!)
+        for (s in ServerDb.getInstance().stored)
             stored.add(s.name + "\t" + s.host + "\n" + s.type)
 
         storedServersAdapter.notifyDataSetChanged()

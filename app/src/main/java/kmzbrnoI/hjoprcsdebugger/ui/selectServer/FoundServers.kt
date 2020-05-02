@@ -36,7 +36,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
 
         val sp = context?.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
-        ServerDb.instance = ServerDb(sp)
+        ServerDb.getInstance(sp)
 
         context?.let { context ->
             if (ContextCompat.checkSelfPermission(
@@ -61,9 +61,8 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             )
             found_servers_list_view.adapter = foundServersAdapter
 
-
             found_servers_list_view.setOnItemClickListener { _, _, position, _ ->
-                ServerDb.instance?.let { ServerDbInstance ->
+                ServerDb.getInstance().let { ServerDbInstance ->
                     if (ServerDbInstance.found[position].active) {
                         connectToServer(context, position)
                     } else {
@@ -119,7 +118,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
 
     private fun updateFoundServers() {
         found.clear()
-        for (s in ServerDb.instance?.found!!) {
+        for (s in ServerDb.getInstance().found) {
             val statusText = if (s.active) "online" else "offline"
             found.add(s.name + "\t" + s.host + "\n" + s.type + " \t" + statusText)
         }

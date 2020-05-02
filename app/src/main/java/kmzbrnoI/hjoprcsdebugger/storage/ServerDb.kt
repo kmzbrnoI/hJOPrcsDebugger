@@ -10,7 +10,15 @@ class ServerDb(internal var preferences: SharedPreferences?) {
     var stored: ArrayList<Server> = ArrayList()
 
     companion object {
-        var instance: ServerDb? = null
+        private var instance: ServerDb? = null
+
+        fun getInstance(preferences: SharedPreferences? = null): ServerDb {
+            if (instance == null) {
+                instance = ServerDb(preferences)
+            }
+
+            return instance as ServerDb
+        }
     }
 
     init {
