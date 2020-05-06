@@ -118,11 +118,9 @@ class UDPDiscover(internal var mWifi: WifiManager) : AsyncTask<String, Server, S
     }
 
     override fun onProgressUpdate(vararg progress: Server) {
-        progress[0].host?.let { host ->
-            if (!ServerDb.getInstance().isFoundServer(host, progress[0].port)) {
-                ServerDb.getInstance().addFoundServer(progress[0])
-                delegate?.discoveringFinished(FOUND_SERVERS_RELOAD)
-            }
+        if (!ServerDb.getInstance().isFoundServer(progress[0].host, progress[0].port)) {
+            ServerDb.getInstance().addFoundServer(progress[0])
+            delegate?.discoveringFinished(FOUND_SERVERS_RELOAD)
         }
     }
 }
