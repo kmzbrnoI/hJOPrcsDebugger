@@ -3,12 +3,16 @@
     android:id="@+id/select_server"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/saved_servers" />
+        android:text="@string/saved_servers"
+        android:textStyle="normal|bold"
+        android:textAlignment="textStart"
+        android:textSize="24sp" />
 
     <ListView
         android:id="@+id/stored_servers_list_view"

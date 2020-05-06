@@ -3,7 +3,8 @@
     android:id="@+id/server_connector"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
     <ListView android:id="@+id/connector_list"
         android:layout_width="fill_parent"
@@ -13,12 +14,6 @@
         android:cacheColorHint="#00000000"
         android:listSelector="@android:color/transparent"/>
 
-    <LinearLayout android:id="@+id/footer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="bottom"
-        android:layout_gravity="right">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -30,8 +25,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:indeterminateTint="@color/colorPrimary" />
         </RelativeLayout>
 
-    </LinearLayout>
 </LinearLayout>
