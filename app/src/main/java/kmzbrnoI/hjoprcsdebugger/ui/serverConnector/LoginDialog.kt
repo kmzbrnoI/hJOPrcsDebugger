@@ -16,7 +16,7 @@ class LoginDialog(private var message: String) : DialogFragment() {
     var delegate: LoginDialogResponse? = null
 
     companion object {
-        const val TAG = "TAG"
+        const val TAG = "LoginDialogTag"
     }
 
     override fun onCreateView(

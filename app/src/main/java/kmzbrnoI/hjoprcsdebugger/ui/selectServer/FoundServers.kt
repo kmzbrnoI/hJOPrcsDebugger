@@ -85,6 +85,15 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
                 swipe_refresh_layout.isRefreshing = false
             }
 
+            found__create_new_button.setOnClickListener{
+                val dialog = CreateServerDialog()
+
+                val transition = fragmentManager?.beginTransaction()
+                if (transition != null) {
+                    dialog.show(transition, CreateServerDialog.TAG)
+                }
+            }
+
         }
 
         return view

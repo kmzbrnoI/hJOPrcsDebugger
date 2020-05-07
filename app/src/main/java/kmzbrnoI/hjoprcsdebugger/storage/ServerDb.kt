@@ -34,7 +34,7 @@ class ServerDb(internal var preferences: SharedPreferences?) {
         for (tmpS in serverString) {
             try {
                 val attributes =
-                    tmpS.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    tmpS.split(";".toRegex()).toTypedArray()
                 if (attributes.size > 5) {
                     val tmpServer = Server(
                         attributes[0], attributes[1], Integer.parseInt(attributes[2]), false,
@@ -50,7 +50,7 @@ class ServerDb(internal var preferences: SharedPreferences?) {
         }
     }
 
-    fun saveServers() {
+    private fun saveServers() {
         var saveString = ""
         for (s in this.stored)
             saveString = saveString + s.getSaveDataString() + "|"
@@ -59,7 +59,7 @@ class ServerDb(internal var preferences: SharedPreferences?) {
         editor?.remove("StoredServers")
         editor?.clear()
         editor?.putString("StoredServers", saveString)
-        editor?.commit()
+        editor?.apply()
     }
 
     fun addStoredServer(server: Server) {

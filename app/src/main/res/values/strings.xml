@@ -22,4 +22,13 @@
     <string name="login_password">Password</string>
     <string name="login_save">Save login</string>
 
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="ns_server_name">Server name</string>
+    <string name="ns_server_ip_dns">Server IP/DNS</string>
+    <string name="ns_server_port">Port</string>
+    <string name="ns_server_type">Server type</string>
+    <string name="ns_warning_compulsory">Name, address and port are compulsory fields.</string>
+    <string name="ns_warning_invalid_characters">Name cannot contain sequence "--"</string>
+
 </resources>

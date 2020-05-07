@@ -10,14 +10,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
+import kmzbrnoI.hjoprcsdebugger.helpers.CreateServerDialogResponse
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
-import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
-import kmzbrnoI.hjoprcsdebugger.helpers.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kotlinx.android.synthetic.main.select_stored_server.view.*
 import java.util.ArrayList
 
-class StoredServers : Fragment(), UDPDiscoverResponse {
+class StoredServers : Fragment(), CreateServerDialogResponse {
     lateinit var storedServersAdapter: ArrayAdapter<String>
 
     var stored: ArrayList<String> = ArrayList()
@@ -40,9 +39,11 @@ class StoredServers : Fragment(), UDPDiscoverResponse {
             )
             stored_servers_list_view.adapter = storedServersAdapter
 
+            updateStoredServers()
+
             stored_servers_list_view.setOnItemClickListener { _, _, position, _ ->
                 ServerDb.getInstance().let { ServerDbInstance ->
-                    if (ServerDbInstance.found[position].active) {
+                    if (ServerDbInstance.stored[position].active) {
                         connectToServer(context, position)
                     } else {
                         AlertDialog.Builder(context)
@@ -58,9 +59,23 @@ class StoredServers : Fragment(), UDPDiscoverResponse {
                     }
                 }
             }
+
+            stored__create_new_button.setOnClickListener{
+                createServerDialog()
+            }
         }
 
         return view
+    }
+
+    private fun createServerDialog() {
+        val dialog = CreateServerDialog()
+        dialog.delegate = this
+
+        val transition = fragmentManager?.beginTransaction()
+        if (transition != null) {
+            dialog.show(transition, CreateServerDialog.TAG)
+        }
     }
 
     private fun connectToServer(context: Context, index: Int) {
@@ -78,11 +93,7 @@ class StoredServers : Fragment(), UDPDiscoverResponse {
         storedServersAdapter.notifyDataSetChanged()
     }
 
-    override fun discoveringFinished(output: Int) {
-        when (output) {
-            STORED_SERVERS_RELOAD -> {
-                updateStoredServers()
-            }
-        }
+    override fun onServerCreated() {
+        updateStoredServers()
     }
 }
