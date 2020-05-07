@@ -68,7 +68,7 @@ class LoginDialog(private var message: String) : DialogFragment() {
 
                 delegate?.onLoginClicked()
 
-                dialog.dismiss()
+                dismiss()
             }
         }
     }

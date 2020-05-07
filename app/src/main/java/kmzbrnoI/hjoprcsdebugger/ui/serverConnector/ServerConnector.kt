@@ -90,7 +90,9 @@ class ServerConnector : Fragment(), TCPClientResponse, LoginDialogResponse {
             dialog.delegate = this
             val transition = fragmentManager?.beginTransaction()
 
-            dialog.show(transition, LoginDialog.TAG)
+            if (transition != null) {
+                dialog.show(transition, LoginDialog.TAG)
+            }
         }
     }
 
@@ -100,6 +102,16 @@ class ServerConnector : Fragment(), TCPClientResponse, LoginDialogResponse {
             mAdapter.notifyDataSetChanged()
             server_loadBar.visibility = View.GONE
         }
+
+        /* Toast.makeText(
+             getApplicationContext(),
+             R.string.conn_connected, Toast.LENGTH_LONG
+         )
+             .show()*/
+
+
+        // val intent = Intent(this, TrainRequest::class.java)
+        // startActivity(intent)
     }
 
     private fun onHandShake(parsed: ArrayList<String>) {
