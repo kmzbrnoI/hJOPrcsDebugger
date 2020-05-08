@@ -39,13 +39,17 @@ class CreateServerDialog : DialogFragment() {
                         .setMessage(R.string.ns_warning_compulsory)
                         .setCancelable(false)
                         .setPositiveButton("ok"
-                        ) { _, _ -> }.show()
+                        ) { _, _ -> }
+                        .setCancelable(false)
+                        .show()
                 } else if (name.contains("--")) {
                     AlertDialog.Builder(context)
                         .setMessage(R.string.ns_warning_invalid_characters)
                         .setCancelable(false)
                         .setPositiveButton("ok"
-                        ) { _, _ -> }.show()
+                        ) { _, _ -> }
+                        .setCancelable(false)
+                        .show()
                 } else {
                     ServerDb.getInstance().addStoredServer(
                         Server(

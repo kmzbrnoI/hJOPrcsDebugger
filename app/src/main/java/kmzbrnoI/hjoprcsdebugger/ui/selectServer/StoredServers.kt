@@ -1,26 +1,33 @@
 package kmzbrnoI.hjoprcsdebugger.ui.selectServer
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
+import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.responses.CreateServerDialogResponse
+import kmzbrnoI.hjoprcsdebugger.responses.ServerDbResponse
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kotlinx.android.synthetic.main.select_stored_server.view.*
 import java.util.ArrayList
 
-class StoredServers : Fragment(), CreateServerDialogResponse {
+class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
     lateinit var storedServersAdapter: ArrayAdapter<String>
 
     var stored: ArrayList<String> = ArrayList()
 
+    @SuppressLint("ResourceAsColor")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,9 +62,31 @@ class StoredServers : Fragment(), CreateServerDialogResponse {
                             }
                             .setNegativeButton(
                                 getString(R.string.no)
-                            ) { _, _ -> }.show()
+                            ) { _, _ -> }
+                            .setCancelable(false)
+                            .show()
                     }
                 }
+            }
+
+            stored_servers_list_view.setOnItemLongClickListener { _, _, position, _ ->
+                stored_servers_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.delete_server_alert)
+                    .setPositiveButton(
+                        getString(R.string.yes)
+                    ) { _, _ ->
+                        removeServer(position)
+                        stored_servers_list_view.getChildAt(position).setBackgroundColor(Color.TRANSPARENT)
+                    }
+                    .setNegativeButton(
+                        getString(R.string.no)
+                    ) { _, _ ->
+                        stored_servers_list_view.getChildAt(position).setBackgroundColor(Color.TRANSPARENT)
+                    }
+                    .setCancelable(false)
+                    .show()
+                true
             }
 
             stored__create_new_button.setOnClickListener{
@@ -78,6 +107,14 @@ class StoredServers : Fragment(), CreateServerDialogResponse {
         }
     }
 
+    private fun removeServer(position: Int) {
+        val servedDb = ServerDb.getInstance()
+        servedDb.delegate = this
+
+        servedDb.removeStoredServer(position)
+    }
+
+
     private fun connectToServer(context: Context, index: Int) {
         val intent = Intent(context, ServerConnectorActivity::class.java)
         intent.putExtra("serverType", "stored")
@@ -95,5 +132,13 @@ class StoredServers : Fragment(), CreateServerDialogResponse {
 
     override fun onServerCreated() {
         updateStoredServers()
+    }
+
+    override fun response(output: Int) {
+        when (output) {
+            STORED_SERVERS_RELOAD -> {
+                updateStoredServers()
+            }
+        }
     }
 }

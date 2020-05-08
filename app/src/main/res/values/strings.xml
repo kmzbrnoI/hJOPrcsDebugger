@@ -4,6 +4,7 @@
     <string name="discovered_servers">Discovered servers</string>
     <string name="saved_servers">Saved servers</string>
     <string name="conn_server_offline">Server is offline, really connect to server?</string>
+    <string name="delete_server_alert">Do you really want to delete this server from your stored list?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="sc_connecting">Connecting...</string>

@@ -2,10 +2,14 @@ package kmzbrnoI.hjoprcsdebugger.storage
 
 import android.content.SharedPreferences
 import android.util.Log
+import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.models.Server
+import kmzbrnoI.hjoprcsdebugger.responses.ServerDbResponse
 import java.util.ArrayList
 
 class ServerDb(internal var preferences: SharedPreferences?) {
+    var delegate: ServerDbResponse? = null
+
     var found: ArrayList<Server> = ArrayList()
     var stored: ArrayList<Server> = ArrayList()
 
@@ -65,6 +69,22 @@ class ServerDb(internal var preferences: SharedPreferences?) {
     fun addStoredServer(server: Server) {
         this.stored.add(server)
         this.saveServers()
+    }
+
+    fun removeStoredServer(position: Int) {
+        if (position <= stored.size) {
+            for (s in found) {
+                if (s.host == stored[position].host && s.port == stored[position].port) {
+                    s.username = ""
+                    s.password = ""
+                }
+            }
+
+            this.stored.removeAt(position)
+            this.saveServers()
+
+            delegate?.response(STORED_SERVERS_RELOAD)
+        }
     }
 
     fun addFoundServer(server: Server) {

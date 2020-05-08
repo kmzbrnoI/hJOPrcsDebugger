@@ -77,7 +77,9 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
                             }
                             .setNegativeButton(
                                 getString(R.string.no)
-                            ) { _, _ -> }.show()
+                            ) { _, _ -> }
+                            .setCancelable(false)
+                            .show()
                     }
                 }
             }
