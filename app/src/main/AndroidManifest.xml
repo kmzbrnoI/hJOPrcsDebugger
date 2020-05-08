@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.serverConnector.ServerConnectorActivity" />
+        <activity android:name=".ui.modulesList.ModulesListActivity" android:parentActivityName=".ui.selectServer.SelectServerActivity"/>
     </application>
 
 </manifest>

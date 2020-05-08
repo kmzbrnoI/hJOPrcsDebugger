@@ -1,5 +1,6 @@
 package kmzbrnoI.hjoprcsdebugger.ui.serverConnector
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -15,6 +16,7 @@ import kmzbrnoI.hjoprcsdebugger.responses.TCPClientResponse
 import kmzbrnoI.hjoprcsdebugger.models.Server
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
+import kmzbrnoI.hjoprcsdebugger.ui.modulesList.ModulesListActivity
 import kotlinx.android.synthetic.main.server_connector.*
 import kotlinx.android.synthetic.main.server_connector.view.*
 import java.util.*
@@ -97,22 +99,16 @@ class ServerConnector : Fragment(), TCPClientResponse,
         }
     }
 
-    private fun onReceiveModules() {
+    private fun onReceiveModules(modules: ArrayList<String>) {
         arrayList.add(getString(R.string.sc_done))
         handler.post {
             mAdapter.notifyDataSetChanged()
             server_loadBar.visibility = View.GONE
         }
 
-        /* Toast.makeText(
-             getApplicationContext(),
-             R.string.conn_connected, Toast.LENGTH_LONG
-         )
-             .show()*/
-
-
-        // val intent = Intent(this, TrainRequest::class.java)
-        // startActivity(intent)
+        val intent = Intent(context, ModulesListActivity::class.java)
+        intent.putExtra("modules", modules[3])
+        startActivity(intent)
     }
 
     private fun onHandShake(parsed: ArrayList<String>) {
@@ -199,7 +195,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
                 onHandShake(parsed)
             }
             ON_RECEIVE_MODULES -> {
-                onReceiveModules()
+                onReceiveModules(parsed)
             }
             GLOBAL_AUTH -> {
                 onGlobalAuth(parsed)

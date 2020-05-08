@@ -61,6 +61,8 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             )
             found_servers_list_view.adapter = foundServersAdapter
 
+            updateFoundServers()
+
             found_servers_list_view.setOnItemClickListener { _, _, position, _ ->
                 ServerDb.getInstance().let { ServerDbInstance ->
                     if (ServerDbInstance.found[position].active) {
