@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import kmzbrnoI.hjoprcsdebugger.R
-import kmzbrnoI.hjoprcsdebugger.helpers.CreateServerDialogResponse
+import kmzbrnoI.hjoprcsdebugger.responses.CreateServerDialogResponse
 import kmzbrnoI.hjoprcsdebugger.models.Server
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kotlinx.android.synthetic.main.new_server.view.*

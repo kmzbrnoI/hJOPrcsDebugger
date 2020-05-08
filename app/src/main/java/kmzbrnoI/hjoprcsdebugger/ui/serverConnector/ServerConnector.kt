@@ -10,8 +10,8 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.*
-import kmzbrnoI.hjoprcsdebugger.helpers.LoginDialogResponse
-import kmzbrnoI.hjoprcsdebugger.helpers.TCPClientResponse
+import kmzbrnoI.hjoprcsdebugger.responses.LoginDialogResponse
+import kmzbrnoI.hjoprcsdebugger.responses.TCPClientResponse
 import kmzbrnoI.hjoprcsdebugger.models.Server
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
@@ -19,7 +19,8 @@ import kotlinx.android.synthetic.main.server_connector.*
 import kotlinx.android.synthetic.main.server_connector.view.*
 import java.util.*
 
-class ServerConnector : Fragment(), TCPClientResponse, LoginDialogResponse {
+class ServerConnector : Fragment(), TCPClientResponse,
+    LoginDialogResponse {
     private var arrayList: ArrayList<String> = ArrayList()
     lateinit var mAdapter: ArrayAdapter<String>
     private var handler: Handler = Handler()

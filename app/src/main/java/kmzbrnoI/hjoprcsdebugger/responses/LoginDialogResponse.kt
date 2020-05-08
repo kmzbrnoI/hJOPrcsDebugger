@@ -1,4 +1,4 @@
-package kmzbrnoI.hjoprcsdebugger.helpers
+package kmzbrnoI.hjoprcsdebugger.responses
 
 interface LoginDialogResponse {
     fun onLoginClicked()

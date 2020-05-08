@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.helpers.HashHelper
-import kmzbrnoI.hjoprcsdebugger.helpers.LoginDialogResponse
+import kmzbrnoI.hjoprcsdebugger.responses.LoginDialogResponse
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kotlinx.android.synthetic.main.user_login.view.*

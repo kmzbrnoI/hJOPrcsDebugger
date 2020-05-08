@@ -16,7 +16,7 @@ import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.constants.FOUND_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.constants.REQUEST_WIFI_PERMISSION
-import kmzbrnoI.hjoprcsdebugger.helpers.UDPDiscoverResponse
+import kmzbrnoI.hjoprcsdebugger.responses.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.network.UDPDiscover
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kotlinx.android.synthetic.main.select_found_server.view.*

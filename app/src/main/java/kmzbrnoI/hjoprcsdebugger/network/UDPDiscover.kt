@@ -4,7 +4,7 @@ import android.net.wifi.WifiManager
 import android.os.AsyncTask
 import android.util.Log
 import kmzbrnoI.hjoprcsdebugger.constants.FOUND_SERVERS_RELOAD
-import kmzbrnoI.hjoprcsdebugger.helpers.UDPDiscoverResponse
+import kmzbrnoI.hjoprcsdebugger.responses.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kmzbrnoI.hjoprcsdebugger.models.Server
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb

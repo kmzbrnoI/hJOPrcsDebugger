@@ -5,7 +5,7 @@ import android.app.Application
 import android.util.Log
 import kmzbrnoI.hjoprcsdebugger.constants.*
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
-import kmzbrnoI.hjoprcsdebugger.helpers.TCPClientResponse
+import kmzbrnoI.hjoprcsdebugger.responses.TCPClientResponse
 import kmzbrnoI.hjoprcsdebugger.models.Server
 import java.net.ConnectException
 

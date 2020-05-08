@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
-import kmzbrnoI.hjoprcsdebugger.helpers.CreateServerDialogResponse
+import kmzbrnoI.hjoprcsdebugger.responses.CreateServerDialogResponse
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kotlinx.android.synthetic.main.select_stored_server.view.*

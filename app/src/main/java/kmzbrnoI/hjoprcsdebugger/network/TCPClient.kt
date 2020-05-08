@@ -3,7 +3,7 @@ package kmzbrnoI.hjoprcsdebugger.network
 import android.util.Log
 import kmzbrnoI.hjoprcsdebugger.constants.CONNECTION_ESTABLISHED
 import kmzbrnoI.hjoprcsdebugger.constants.TCP_DISCONNECT
-import kmzbrnoI.hjoprcsdebugger.helpers.TCPClientResponse
+import kmzbrnoI.hjoprcsdebugger.responses.TCPClientResponse
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
