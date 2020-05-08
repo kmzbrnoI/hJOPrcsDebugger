@@ -97,7 +97,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
         }
     }
 
-    private fun onAreas() {
+    private fun onReceiveModules() {
         arrayList.add(getString(R.string.sc_done))
         handler.post {
             mAdapter.notifyDataSetChanged()
@@ -116,11 +116,11 @@ class ServerConnector : Fragment(), TCPClientResponse,
     }
 
     private fun onHandShake(parsed: ArrayList<String>) {
-        if (parsed.size < 3 || !listOf(*serverSupportedVersions).contains(parsed[2])) {
+       if (parsed.size < 3 || !listOf(*serverSupportedVersions).contains(parsed[2])) {
             arrayList.add(getString(R.string.sc_version_warning))
         } else {
             arrayList.add(getString(R.string.sc_connection_ok))
-        }
+       }
 
         handler.post {
             mAdapter.notifyDataSetChanged()
@@ -136,7 +136,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
             arrayList.add(getString(R.string.sc_authorizing))
             TCPClientApplication
                 .getInstance()
-                .send("-;LOK;G;AUTH;{" + TCPClientApplication.getInstance().server!!.username + "};" + TCPClientApplication.getInstance().server!!.password)
+                .send("-;RCSd;AUTH;{" + TCPClientApplication.getInstance().server!!.username + "};" + TCPClientApplication.getInstance().server!!.password)
             handler.post {
                 mAdapter.notifyDataSetChanged()
             }
@@ -144,19 +144,19 @@ class ServerConnector : Fragment(), TCPClientResponse,
     }
 
     private fun onGlobalAuth(parsed: ArrayList<String>) {
-        if (parsed[4].toUpperCase() == "OK") {
+        if (parsed[3].toUpperCase() == "OK") {
             arrayList.add(getString(R.string.sc_auth_ok))
             arrayList.add(getString(R.string.sc_getting_ors))
-            TCPClientApplication.getInstance().send("-;OR-LIST")
+            TCPClientApplication.getInstance().send("-;RCSd;LIST;")
         } else {
             arrayList.add(getString(R.string.sc_auth_err))
-            if (parsed.size >= 6)
-                arrayList.add(parsed.get(5))
+            if (parsed.size >= 5)
+                arrayList.add(parsed.get(4))
             handler.post {
                 server_loadBar.visibility = View.GONE
             }
-            if (parsed.size >= 6)
-                editLogin(parsed.get(5))
+            if (parsed.size >= 5)
+                editLogin(parsed.get(4))
             else
                 editLogin(getString(R.string.sc_auth_err))
         }
@@ -198,8 +198,8 @@ class ServerConnector : Fragment(), TCPClientResponse,
             HAND_SHAKE -> {
                 onHandShake(parsed)
             }
-            AREAS -> {
-                onAreas()
+            ON_RECEIVE_MODULES -> {
+                onReceiveModules()
             }
             GLOBAL_AUTH -> {
                 onGlobalAuth(parsed)

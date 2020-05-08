@@ -71,8 +71,8 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
         if (parsed.get(1) == "HELLO") {
             delegate?.response(HAND_SHAKE, parsed)
 
-        } else if (parsed.get(1) == "OR-LIST") {
-            delegate?.response(AREAS, parsed)
+        } else if (parsed.get(2) == "INFO") {
+            delegate?.response(ON_RECEIVE_MODULES, parsed)
 
         } else if (parsed.get(1) == "PING" && parsed.size > 2 && parsed.get(2).toUpperCase() == "REQ-RESP") {
             if (parsed.size >= 4) {
@@ -81,13 +81,9 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
                 this.send("-;PONG\n")
             }
 
-        } else if (parsed.get(1) == "LOK") {
+        } else if (parsed.get(2) == "AUTH") {
             if (parsed.size < 3) return
-            if (parsed.get(2) == "G") {
-                if (parsed.get(3).toUpperCase() == "AUTH"){
-                    delegate?.response(GLOBAL_AUTH, parsed)
-                }
-            }
+            delegate?.response(GLOBAL_AUTH, parsed)
         }
     }
 }

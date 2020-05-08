@@ -61,7 +61,7 @@ class LoginDialog(private var message: String) : DialogFragment() {
                 }
 
                 TCPClientApplication.getInstance().send(
-                    "-;LOK;G;AUTH;{" +
+                    "-;RCSd;AUTH;{" +
                             TCPClientApplication.getInstance().server?.username + "};" +
                             TCPClientApplication.getInstance().server?.password
                 )

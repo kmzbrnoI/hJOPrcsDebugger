@@ -10,7 +10,7 @@
     <string name="disconnected">Disconnected from server!</string>
     <string name="sc_auth_ok">Successfully authorized</string>
     <string name="sc_auth_err">Authorization problem!</string>
-    <string name="sc_getting_ors">Getting stations...</string>
+    <string name="sc_getting_ors">Getting modules...</string>
     <string name="sc_version_warning">Server uses other protocol version, application may misbehave!</string>
     <string name="sc_auth_wait">Waiting for login...</string>
     <string name="sc_connection_ok">Communication established</string>
