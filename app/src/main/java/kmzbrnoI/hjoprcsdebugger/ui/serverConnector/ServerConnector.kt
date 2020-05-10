@@ -56,7 +56,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
     private fun start() {
         val extras = activity?.intent?.extras
         val tcp = TCPClientApplication.getInstance()
-        tcp.delegate = this
+        tcp.delegateTCPResponse = this
         val server: Server
 
         if (tcp.connected())

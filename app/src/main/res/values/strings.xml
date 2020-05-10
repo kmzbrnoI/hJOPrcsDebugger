@@ -32,4 +32,7 @@
     <string name="ns_warning_compulsory">Name, address and port are compulsory fields.</string>
     <string name="ns_warning_invalid_characters">Name cannot contain sequence "--"</string>
 
+    <string name="inputs">Inputs</string>
+    <string name="outputs">Outputs</string>
+
 </resources>

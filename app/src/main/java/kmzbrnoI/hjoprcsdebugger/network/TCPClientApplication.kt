@@ -5,15 +5,19 @@ import android.app.Application
 import android.util.Log
 import kmzbrnoI.hjoprcsdebugger.constants.*
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
+import kmzbrnoI.hjoprcsdebugger.models.Module
 import kmzbrnoI.hjoprcsdebugger.responses.TCPClientResponse
 import kmzbrnoI.hjoprcsdebugger.models.Server
+import kmzbrnoI.hjoprcsdebugger.responses.ModuleResponse
 import java.net.ConnectException
 
 @SuppressLint("Registered")
 class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
-    var delegate: TCPClientResponse? = null
+    var delegateTCPResponse: TCPClientResponse? = null
+    var delegateModuleResponse: ModuleResponse? = null
 
     var server: Server? = null
+    var module: Module? = null
 
     internal var mTcpClient: TCPClient? = null
 
@@ -34,7 +38,7 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
             mTcpClient!!.disconnect()
 
         this.server = server
-        mTcpClient = TCPClient(server.host, server.port, delegate)
+        mTcpClient = TCPClient(server.host, server.port, delegateTCPResponse)
 
         mTcpClient!!.listen(this)
     }
@@ -46,6 +50,21 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
             this.mTcpClient!!.disconnect()
     }
 
+    fun connectToModule(module: Module) {
+        if (server != null && this.module != null)
+            disconnectModule()
+
+        this.module = module
+        send("-;RCSd;PLEASE;" + module.address)
+    }
+
+    fun disconnectModule() {
+        if (this.module != null) {
+            send("-;RCSd;RELEASE;" + this.module?.address)
+            this.module = null
+        }
+    }
+
     fun send(message: String) {
         if (mTcpClient == null) return
 
@@ -55,7 +74,6 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
             Log.e("TCP", "Cannot send data, disconnecting", e)
             this.disconnect()
         }
-
     }
 
     fun connected(): Boolean {
@@ -66,24 +84,27 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
         val parsed = ParseHelper().parse(message, ";", "")
 
         if (parsed.size < 2 || parsed.get(0) != "-") return
-        parsed.set(1, parsed.get(1).toUpperCase())
+        parsed[1] = parsed[1].toUpperCase()
 
-        if (parsed.get(1) == "HELLO") {
-            delegate?.response(HAND_SHAKE, parsed)
+        if (parsed[1] == "HELLO") {
+            delegateTCPResponse?.response(HAND_SHAKE, parsed)
 
-        } else if (parsed.get(2) == "INFO") {
-            delegate?.response(ON_RECEIVE_MODULES, parsed)
+        } else if (parsed[2] == "INFO") {
+            delegateTCPResponse?.response(ON_RECEIVE_MODULES, parsed)
 
-        } else if (parsed.get(1) == "PING" && parsed.size > 2 && parsed.get(2).toUpperCase() == "REQ-RESP") {
+        } else if (parsed[1] == "PING" && parsed.size > 2 && parsed[2].toUpperCase() == "REQ-RESP") {
             if (parsed.size >= 4) {
-                this.send("-;PONG;" + parsed.get(3) + '\n'.toString())
+                this.send("-;PONG;" + parsed[3] + '\n'.toString())
             } else {
                 this.send("-;PONG\n")
             }
 
-        } else if (parsed.get(2) == "AUTH") {
+        } else if (parsed[2] == "AUTH") {
             if (parsed.size < 3) return
-            delegate?.response(GLOBAL_AUTH, parsed)
+            delegateTCPResponse?.response(GLOBAL_AUTH, parsed)
+
+        } else if (parsed[2] == "MODULE") {
+            delegateModuleResponse?.response(parsed)
         }
     }
 }
