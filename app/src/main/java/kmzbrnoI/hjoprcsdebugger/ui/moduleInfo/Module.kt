@@ -1,5 +1,7 @@
 package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
+import android.media.MediaPlayer
+import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -25,6 +27,8 @@ class Module: Fragment(), ModuleResponse {
 
     private var handler: Handler = Handler()
 
+    private lateinit var sound: MediaPlayer
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,6 +44,8 @@ class Module: Fragment(), ModuleResponse {
             inputsList = parse(e.getString("inputs"))
             outputsList = parse(e.getString("outputs"))
         }
+
+        sound = MediaPlayer.create(context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
 
         return inflater.inflate(R.layout.module, container, false).apply {
             inputsAdapter = ArrayAdapter(
@@ -75,6 +81,7 @@ class Module: Fragment(), ModuleResponse {
                     handler.post {
                         context?.let{ context ->
                             view.getChildAt(i).setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
+                            sound.start()
                         }
                     }
                     handler.postDelayed( {
