@@ -1,16 +1,13 @@
 package kmzbrnoI.hjoprcsdebugger.ui.selectServer
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
@@ -27,7 +24,6 @@ class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
 
     var stored: ArrayList<String> = ArrayList()
 
-    @SuppressLint("ResourceAsColor")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,12 +73,12 @@ class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
                         getString(R.string.yes)
                     ) { _, _ ->
                         removeServer(position)
-                        stored_servers_list_view.getChildAt(position).setBackgroundColor(Color.TRANSPARENT)
+                        stored_servers_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                     }
                     .setNegativeButton(
                         getString(R.string.no)
                     ) { _, _ ->
-                        stored_servers_list_view.getChildAt(position).setBackgroundColor(Color.TRANSPARENT)
+                        stored_servers_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                     }
                     .setCancelable(false)
                     .show()
