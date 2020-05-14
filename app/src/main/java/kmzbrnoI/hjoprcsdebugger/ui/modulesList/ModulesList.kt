@@ -22,6 +22,8 @@ class ModulesList: Fragment(), ModuleResponse {
     lateinit var modulesList: ArrayList<Module>
     lateinit var mAdapter: ArrayAdapter<String>
 
+    var selectedIndex: Int? = null
+
     var selectedModuleInputs: String? = null
     var selectedModuleOutputs: String? = null
 
@@ -68,6 +70,8 @@ class ModulesList: Fragment(), ModuleResponse {
         modules_list_overlay.visibility = View.VISIBLE
         modules_list_loadBar.visibility = View.VISIBLE
 
+        selectedIndex = index
+
         val tcp = TCPClientApplication.getInstance()
         tcp.delegateModuleResponse = this
 
@@ -85,6 +89,9 @@ class ModulesList: Fragment(), ModuleResponse {
             val intent = Intent(context, ModuleInfoActivity::class.java)
             intent.putExtra("inputs", selectedModuleInputs)
             intent.putExtra("outputs", selectedModuleOutputs)
+            selectedIndex?.let { index ->
+                intent.putExtra("nameOfModule", modulesList[index].name)
+            }
             startActivity(intent)
         }
 

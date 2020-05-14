@@ -12,6 +12,8 @@ class ModuleInfoActivity: AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        title = intent.extras?.getString("nameOfModule")
+
         if (savedInstanceState == null) {
             val fragment = Module()
             supportFragmentManager.beginTransaction()
