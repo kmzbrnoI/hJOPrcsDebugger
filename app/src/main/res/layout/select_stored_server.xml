@@ -7,14 +7,6 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/saved_servers"
-        android:textStyle="normal|bold"
-        android:textAlignment="textStart"
-        android:textSize="24sp" />
-
     <ListView
         android:id="@+id/stored_servers_list_view"
         android:layout_width="match_parent"

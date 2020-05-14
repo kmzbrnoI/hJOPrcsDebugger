@@ -14,23 +14,23 @@ import kotlinx.android.synthetic.main.server_pager_activity.*
  */
 private const val NUM_PAGES = 2
 
-class SelectServerActivity : AppCompatActivity() {
 
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
-     */
+class SelectServerActivity : AppCompatActivity() {
+    private lateinit var tabTitles: ArrayList<String>
+
     private lateinit var mPager: ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.server_pager_activity)
 
-        if (savedInstanceState == null) {
-            // The pager adapter, which provides the pages to the view pager widget.
-            val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-            servers_pager.adapter = pagerAdapter
-        }
+        tabTitles = arrayListOf(getString(R.string.discovered_servers), getString(R.string.saved_servers))
+
+        // The pager adapter, which provides the pages to the view pager widget.
+        val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
+        servers_pager.adapter = pagerAdapter
+
+        servers_tabs.setupWithViewPager(servers_pager)
     }
 
     override fun onBackPressed() {
@@ -54,13 +54,17 @@ class SelectServerActivity : AppCompatActivity() {
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-                    return FoundServers()
+                     FoundServers()
                 }
                 1 -> {
                     return StoredServers()
                 }
             }
             return FoundServers()
+        }
+
+        override fun getPageTitle(position: Int): CharSequence? {
+            return tabTitles[position]
         }
     }
 }
