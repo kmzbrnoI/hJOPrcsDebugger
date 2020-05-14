@@ -20,6 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.createServer.CreateServerActivity" />
         <activity android:name=".ui.serverConnector.ServerConnectorActivity" />
         <activity android:name=".ui.modulesList.ModulesListActivity" android:parentActivityName=".ui.selectServer.SelectServerActivity"/>
         <activity android:name=".ui.moduleInfo.ModuleInfoActivity" />

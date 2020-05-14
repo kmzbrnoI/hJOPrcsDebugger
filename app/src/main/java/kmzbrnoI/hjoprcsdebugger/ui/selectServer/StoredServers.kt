@@ -1,5 +1,6 @@
 package kmzbrnoI.hjoprcsdebugger.ui.selectServer
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -16,10 +17,11 @@ import kmzbrnoI.hjoprcsdebugger.responses.CreateServerDialogResponse
 import kmzbrnoI.hjoprcsdebugger.responses.ServerDbResponse
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
+import kmzbrnoI.hjoprcsdebugger.ui.createServer.CreateServer
 import kotlinx.android.synthetic.main.select_stored_server.view.*
 import java.util.ArrayList
 
-class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
+class StoredServers : Fragment(), ServerDbResponse {
     lateinit var storedServersAdapter: ArrayAdapter<String>
 
     var stored: ArrayList<String> = ArrayList()
@@ -35,7 +37,7 @@ class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
 
         ServerDb.getInstance(sp)
 
-        val view = inflater.inflate(R.layout.select_stored_server, container, false).apply {
+        return inflater.inflate(R.layout.select_stored_server, container, false).apply {
             storedServersAdapter = ArrayAdapter(
                 context,
                 android.R.layout.simple_list_item_1, android.R.id.text1, stored
@@ -84,22 +86,6 @@ class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
                     .show()
                 true
             }
-
-            stored__create_new_button.setOnClickListener{
-                createServerDialog()
-            }
-        }
-
-        return view
-    }
-
-    private fun createServerDialog() {
-        val dialog = CreateServerDialog()
-        dialog.delegate = this
-
-        val transition = fragmentManager?.beginTransaction()
-        if (transition != null) {
-            dialog.show(transition, CreateServerDialog.TAG)
         }
     }
 
@@ -126,13 +112,17 @@ class StoredServers : Fragment(), CreateServerDialogResponse, ServerDbResponse {
         storedServersAdapter.notifyDataSetChanged()
     }
 
-    override fun onServerCreated() {
-        updateStoredServers()
-    }
-
     override fun response(output: Int) {
         when (output) {
             STORED_SERVERS_RELOAD -> {
+                updateStoredServers()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == STORED_SERVERS_RELOAD) {
+            if (resultCode == Activity.RESULT_OK) {
                 updateStoredServers()
             }
         }

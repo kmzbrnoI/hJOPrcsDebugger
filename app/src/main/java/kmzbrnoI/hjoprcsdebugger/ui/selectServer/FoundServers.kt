@@ -54,7 +54,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             }
         }
 
-        val view = inflater.inflate(R.layout.select_found_server, container, false).apply {
+        return inflater.inflate(R.layout.select_found_server, container, false).apply {
             foundServersAdapter = ArrayAdapter(
                 context,
                 android.R.layout.simple_list_item_1, android.R.id.text1, found
@@ -88,19 +88,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
                 discoverServers()
                 swipe_refresh_layout.isRefreshing = false
             }
-
-            found__create_new_button.setOnClickListener{
-                val dialog = CreateServerDialog()
-
-                val transition = fragmentManager?.beginTransaction()
-                if (transition != null) {
-                    dialog.show(transition, CreateServerDialog.TAG)
-                }
-            }
-
         }
-
-        return view
     }
 
     override fun onRequestPermissionsResult(

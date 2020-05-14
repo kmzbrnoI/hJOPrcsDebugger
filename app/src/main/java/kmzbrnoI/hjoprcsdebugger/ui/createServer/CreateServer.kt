@@ -1,24 +1,13 @@
-package kmzbrnoI.hjoprcsdebugger.ui.selectServer
+package kmzbrnoI.hjoprcsdebugger.ui.createServer
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
-import kmzbrnoI.hjoprcsdebugger.responses.CreateServerDialogResponse
-import kmzbrnoI.hjoprcsdebugger.models.Server
-import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
-import kotlinx.android.synthetic.main.new_server.view.*
 
-class CreateServerDialog : DialogFragment() {
-    var delegate: CreateServerDialogResponse? = null
-
-    companion object {
-        const val TAG = "CreateServerDialogTag"
-    }
-
+class CreateServer : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,7 +17,7 @@ class CreateServerDialog : DialogFragment() {
 
         return inflater.inflate(R.layout.new_server, container, false).apply {
 
-            saveButton.setOnClickListener {
+            /*saveButton.setOnClickListener {
                 val name = nameText.text.toString()
                 val port = portText.text.toString()
                 val ipAdr = ipText.text.toString()
@@ -63,14 +52,15 @@ class CreateServerDialog : DialogFragment() {
                         )
                     )
 
-                    delegate?.onServerCreated()
-                    dismiss()
+                    activity?.setResult(Activity.RESULT_OK, Intent())
+                    activity?.finish()
                 }
             }
 
             backButton.setOnClickListener {
-                dismiss()
-            }
+                activity?.setResult(Activity.RESULT_CANCELED, Intent())
+                activity?.finish()
+            }*/
         }
     }
 }

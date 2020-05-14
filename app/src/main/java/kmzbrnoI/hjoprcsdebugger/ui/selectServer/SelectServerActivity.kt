@@ -1,5 +1,6 @@
 package kmzbrnoI.hjoprcsdebugger.ui.selectServer
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -7,6 +8,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import kmzbrnoI.hjoprcsdebugger.R
+import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
+import kmzbrnoI.hjoprcsdebugger.ui.createServer.CreateServerActivity
 import kotlinx.android.synthetic.main.server_pager_activity.*
 
 /**
@@ -31,6 +34,11 @@ class SelectServerActivity : AppCompatActivity() {
         servers_pager.adapter = pagerAdapter
 
         servers_tabs.setupWithViewPager(servers_pager)
+
+        create_new_server_button.setOnClickListener{
+            val intent = Intent(this, CreateServerActivity::class.java)
+            startActivityForResult(intent, STORED_SERVERS_RELOAD)
+        }
     }
 
     override fun onBackPressed() {
@@ -54,7 +62,7 @@ class SelectServerActivity : AppCompatActivity() {
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-                     FoundServers()
+                    return FoundServers()
                 }
                 1 -> {
                     return StoredServers()
@@ -65,6 +73,14 @@ class SelectServerActivity : AppCompatActivity() {
 
         override fun getPageTitle(position: Int): CharSequence? {
             return tabTitles[position]
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        for (fragment in supportFragmentManager.fragments) {
+            fragment.onActivityResult(requestCode, resultCode, data)
         }
     }
 }
