@@ -1,6 +1,7 @@
 package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Handler
@@ -15,7 +16,6 @@ import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kotlinx.android.synthetic.main.module_row.view.*
 
 class ModuleAdapter(
-    private var layoutManager: LinearLayoutManager,
     inputs: String?,
     outputs: String?,
     private var inputsTypes: ArrayList<String>,
@@ -23,11 +23,12 @@ class ModuleAdapter(
 ): RecyclerView.Adapter<ModuleAdapter.ModuleViewHolder>() {
     private var handler: Handler = Handler()
     private lateinit var sound: MediaPlayer
-    private lateinit var parent: ViewGroup
 
     private var inputsList= parse(inputs)
     private var outputsList = parse(outputs)
 
+    private var inputsChanged =  ArrayList<Boolean>()
+    private var outputsChanged = ArrayList<Boolean>()
 
     enum class Type {
         Input,
@@ -36,17 +37,23 @@ class ModuleAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModuleViewHolder {
         sound = MediaPlayer.create(parent.context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-        this.parent = parent
+
+        for (i in 0 until inputsList.size) {
+            inputsChanged.add(false)
+        }
+
+        for (i in 0 until outputsList.size) {
+            outputsChanged.add(false)
+        }
 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.module_row, parent, false)
-
-        return  ModuleViewHolder(view)
+        return ModuleViewHolder(view)
     }
 
     override fun getItemCount(): Int = inputsList.size
 
     override fun onBindViewHolder(holder: ModuleViewHolder, position: Int) {
-        holder.bind(position, inputsList[position], outputsList[position], inputsTypes[position], outputsTypes[position])
+        holder.bind(position, inputsList[position], outputsList[position], inputsTypes[position], outputsTypes[position], inputsChanged[position], outputsChanged[position])
     }
 
     private fun parse(types: String?): ArrayList<String> {
@@ -56,16 +63,6 @@ class ModuleAdapter(
         return ParseHelper().parse(types, "|", "")
     }
 
-    private fun setTemporaryColorToView(view: View) {
-        handler.post {
-            view.setBackgroundColor(ContextCompat.getColor(parent.context, R.color.colorPrimaryLighten))
-            sound.start()
-        }
-        handler.postDelayed( {
-            view.setBackgroundColor(ContextCompat.getColor(parent.context, R.color.transparent))
-        }, 5000)
-    }
-
     private fun findDifferenceAndUpdate(list: ArrayList<String>, parsed: ArrayList<String>, type: Type) {
         if (list.size == 0) {
             list.addAll(parsed)
@@ -73,12 +70,21 @@ class ModuleAdapter(
             for (i in 0 until list.size) {
                 if (list[i] != parsed[i]) {
                     list[i] = parsed[i]
-                    val row = layoutManager.findViewByPosition(i)
                     if (type == Type.Input) {
-                        row?.input?.let { setTemporaryColorToView(it) }
+                        inputsChanged[i] = true
+
+                        handler.postDelayed({
+                            inputsChanged[i] = false
+                            notifyDataSetChanged()
+                        }, 5000)
 
                     } else if (type == Type.Output) {
-                        row?.output?.let { setTemporaryColorToView(it) }
+                        outputsChanged[i] = true
+
+                        handler.postDelayed({
+                            outputsChanged[i] = false
+                            notifyDataSetChanged()
+                        }, 5000)
                     }
                 }
             }
@@ -89,24 +95,52 @@ class ModuleAdapter(
     fun receiveUpdate(parsed: ArrayList<String>) {
         if (parsed[5].toUpperCase() == "I") {
             findDifferenceAndUpdate(inputsList, parse(parsed[6]), Type.Input)
-            handler.post {
-                notifyDataSetChanged()
-            }
         } else if (parsed[5].toUpperCase() == "O") {
             findDifferenceAndUpdate(outputsList, parse(parsed[6]), Type.Output)
-            handler.post {
-                notifyDataSetChanged()
-            }
+        }
+        handler.post {
+            notifyDataSetChanged()
+            sound.start()
         }
     }
 
     inner class ModuleViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
 
+        private fun getColor(value: String, type: String): Int {
+            var color = R.color.black
+
+            if (type == "B" || type == "I") {
+                if(value == "0") {
+                    color = R.color.red
+                } else if (value == "1") {
+                    color = R.color.green
+                }
+            } else if (type == "S") {
+                color = R.color.blue
+            }
+
+            return ContextCompat.getColor(itemView.context, color)
+        }
+
+        private fun getWrapperColor(hasChanged: Boolean): Int {
+            var color = R.color.transparent
+
+            if (hasChanged) {
+                color = R.color.colorPrimaryLighten
+            }
+
+            return ContextCompat.getColor(itemView.context, color)
+        }
+
         @SuppressLint("SetTextI18n")
-        fun bind(position: Int, inputValue: String, outputValue: String, inputType: String, outputType: String) {
+        fun bind(position: Int, inputValue: String, outputValue: String, inputType: String, outputType: String, inputHasChanged: Boolean, outputHasChanged: Boolean) {
             view.row_index.text = "${position + 1}:"
-            view.input.text = inputValue
-            view.output.text = outputValue
+
+            view.input.setBackgroundColor(getColor(inputValue, inputType))
+            view.output.setBackgroundColor(getColor(outputValue, outputType))
+
+            view.input_wrapper.setBackgroundColor(getWrapperColor(inputHasChanged))
+            view.output_wrapper.setBackgroundColor(getWrapperColor(outputHasChanged))
         }
     }
 }

@@ -38,12 +38,10 @@ class Module: Fragment(), ModuleResponse {
             outputsTypes = parseTypes(e.getString("outputsTypes"))
         }
 
-        val layoutManager = LinearLayoutManager(context)
-
-        adapter = ModuleAdapter(layoutManager, inputs, outputs, inputsTypes, outputsTypes)
+        adapter = ModuleAdapter(inputs, outputs, inputsTypes, outputsTypes)
 
         return inflater.inflate(R.layout.module, container, false).apply {
-            modules_list_view.layoutManager = layoutManager
+            modules_list_view.layoutManager = LinearLayoutManager(context)
             modules_list_view.adapter = adapter
         }
     }
