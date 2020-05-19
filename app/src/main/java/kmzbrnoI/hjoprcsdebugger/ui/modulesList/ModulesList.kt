@@ -24,8 +24,8 @@ class ModulesList: Fragment(), ModuleResponse {
 
     var selectedIndex: Int? = null
 
-    var selectedModuleInputs: String? = null
-    var selectedModuleOutputs: String? = null
+    private var selectedModuleInputs: String? = null
+    private var selectedModuleOutputs: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +90,8 @@ class ModulesList: Fragment(), ModuleResponse {
             intent.putExtra("inputs", selectedModuleInputs)
             intent.putExtra("outputs", selectedModuleOutputs)
             selectedIndex?.let { index ->
+                intent.putExtra("inputsTypes", modulesList[index].inputTypes)
+                intent.putExtra("outputsTypes", modulesList[index].outputTypes)
                 intent.putExtra("nameOfModule", modulesList[index].name)
             }
             startActivity(intent)
