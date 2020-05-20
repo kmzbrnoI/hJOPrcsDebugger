@@ -34,6 +34,8 @@ class ModulesList: Fragment(), ModuleResponse {
     ): View? {
         retainInstance = true
 
+        TCPClientApplication.getInstance().activityContext = context
+
         val extras = activity?.intent?.extras
         var modules = extras?.getString("modules")
 

@@ -1,8 +1,12 @@
 package kmzbrnoI.hjoprcsdebugger.network
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Application
+import android.content.Context
+import android.os.Handler
 import android.util.Log
+import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.*
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kmzbrnoI.hjoprcsdebugger.models.Module
@@ -18,6 +22,9 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
 
     var server: Server? = null
     var module: Module? = null
+
+    var activityHandler: Handler = Handler()
+    var activityContext: Context? = null
 
     internal var mTcpClient: TCPClient? = null
 
@@ -112,6 +119,16 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
 
         } else if (parsed[2] == "MODULE") {
             delegateModuleResponse?.response(parsed)
+        } else if (parsed[2] == "ERR") {
+            activityHandler.post {
+                activityContext?.let { context ->
+                    AlertDialog.Builder(context)
+                        .setMessage(parsed[3])
+                        .setPositiveButton(context.getString(R.string.ok), null)
+                        .setCancelable(false)
+                        .show()
+                }
+            }
         }
     }
 }

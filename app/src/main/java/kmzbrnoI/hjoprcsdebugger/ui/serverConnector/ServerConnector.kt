@@ -36,6 +36,8 @@ class ServerConnector : Fragment(), TCPClientResponse,
     ): View? {
         retainInstance = true
 
+        TCPClientApplication.getInstance().activityContext = context
+
         val view = inflater.inflate(R.layout.server_connector, container, false).apply {
             server_loadBar.visibility = View.VISIBLE
             mAdapter = ArrayAdapter(

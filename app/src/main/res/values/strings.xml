@@ -40,4 +40,6 @@
 
     <string name="change_module_scom_to">Select new value:  </string>
 
+    <string name="ok">OK</string>
+
 </resources>

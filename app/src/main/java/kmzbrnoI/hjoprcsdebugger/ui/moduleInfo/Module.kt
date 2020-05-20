@@ -22,6 +22,8 @@ class Module: Fragment(), ModuleResponse {
     ): View? {
         retainInstance = true
 
+        TCPClientApplication.getInstance().activityContext = context
+
         TCPClientApplication.getInstance().delegateModuleResponse = this
 
         val extras = activity?.intent?.extras
