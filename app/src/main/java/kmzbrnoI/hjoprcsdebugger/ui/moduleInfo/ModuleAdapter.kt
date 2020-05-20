@@ -1,7 +1,7 @@
 package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Handler
@@ -9,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kmzbrnoI.hjoprcsdebugger.R
+import kmzbrnoI.hjoprcsdebugger.constants.SCOMTypes
+import kmzbrnoI.hjoprcsdebugger.constants.getSCOMTypesStrings
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
+import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kotlinx.android.synthetic.main.module_row.view.*
 
 class ModuleAdapter(
@@ -30,6 +32,10 @@ class ModuleAdapter(
     private var inputsChanged =  ArrayList<Boolean>()
     private var outputsChanged = ArrayList<Boolean>()
 
+    private lateinit var parent: ViewGroup
+
+    private var requestWasSend = false
+
     enum class Type {
         Input,
         Output,
@@ -37,6 +43,8 @@ class ModuleAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModuleViewHolder {
         sound = MediaPlayer.create(parent.context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+
+        this.parent = parent
 
         for (i in 0 until inputsList.size) {
             inputsChanged.add(false)
@@ -56,6 +64,79 @@ class ModuleAdapter(
         holder.bind(position, inputsList[position], outputsList[position], inputsTypes[position], outputsTypes[position], inputsChanged[position], outputsChanged[position])
     }
 
+    private fun onItemClicked(view: View, position: Int) {
+        view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.colorPrimaryLighten))
+
+        if (outputsTypes[position] == "B" || outputsTypes[position] == "I") {
+            var newValue = ""
+
+            if (outputsList[position] == "0") {
+                newValue = "1"
+            } else if (outputsList[position] == "1") {
+                newValue = "0"
+            }
+
+            AlertDialog.Builder(parent.context)
+                .setMessage(
+                    parent.context.getString(R.string.change_module_binary_value_from) + " "
+                        + outputsList[position] + " "
+                        + parent.context.getString(R.string.change_module_binary_value_to) + " "
+                        + newValue
+                )
+                .setPositiveButton(
+                    parent.context.getString(R.string.yes)
+                ) { _, _ ->
+                    TCPClientApplication.getInstance().changeOutput(position, newValue)
+                    requestWasSend = true
+
+                    view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
+                }
+                .setNegativeButton(
+                    parent.context.getString(R.string.no)
+                ) { _, _ ->
+                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
+                }
+                .setCancelable(false)
+                .show()
+        } else if (outputsTypes[position] == "S") {
+            var SCOMTypesStrings = getSCOMTypesStrings()
+            var selectedId = outputsList[position].toInt()
+            var wasInList = true
+
+            if (!SCOMTypes.containsKey(selectedId)) {
+                SCOMTypesStrings = SCOMTypesStrings.plus("$selectedId: ")
+                selectedId = SCOMTypesStrings.lastIndex
+                wasInList = false
+            }
+
+            AlertDialog.Builder(parent.context)
+                .setTitle(parent.context.getString(R.string.change_module_scom_to))
+                .setSingleChoiceItems(SCOMTypesStrings, selectedId) { _, which ->
+                    selectedId = which
+                }
+                .setPositiveButton(
+                    parent.context.getString(R.string.yes)
+                ) { _, _ ->
+                    if (!wasInList && selectedId == SCOMTypes.size) {
+                        selectedId = outputsList[position].toInt()
+                    }
+                    TCPClientApplication.getInstance().changeOutput(position, selectedId.toString())
+                    requestWasSend = true
+
+                    view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
+                }
+                .setNegativeButton(
+                    parent.context.getString(R.string.no)
+                ) { _, _ ->
+                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
+                }
+                .setCancelable(false)
+                .show()
+        }
+    }
+
     private fun parse(types: String?): ArrayList<String> {
         if (types == null)
             return ArrayList()
@@ -63,44 +144,58 @@ class ModuleAdapter(
         return ParseHelper().parse(types, "|", "")
     }
 
-    private fun findDifferenceAndUpdate(list: ArrayList<String>, parsed: ArrayList<String>, type: Type) {
+    private fun findDifferenceAndUpdate(list: ArrayList<String>, parsed: ArrayList<String>, type: Type): Boolean {
+        var changesDetected = false
         if (list.size == 0) {
             list.addAll(parsed)
+            return true
         } else {
             for (i in 0 until list.size) {
                 if (list[i] != parsed[i]) {
+                    changesDetected = true
                     list[i] = parsed[i]
-                    if (type == Type.Input) {
-                        inputsChanged[i] = true
+                    if (!requestWasSend) {
+                        if (type == Type.Input) {
+                            inputsChanged[i] = true
 
-                        handler.postDelayed({
-                            inputsChanged[i] = false
-                            notifyDataSetChanged()
-                        }, 5000)
+                            handler.postDelayed({
+                                inputsChanged[i] = false
+                                notifyDataSetChanged()
+                            }, 5000)
 
-                    } else if (type == Type.Output) {
-                        outputsChanged[i] = true
+                        } else if (type == Type.Output) {
+                            outputsChanged[i] = true
 
-                        handler.postDelayed({
-                            outputsChanged[i] = false
-                            notifyDataSetChanged()
-                        }, 5000)
+                            handler.postDelayed({
+                                outputsChanged[i] = false
+                                notifyDataSetChanged()
+                            }, 5000)
+                        }
+                        handler.post {
+                            sound.start()
+                        }
                     }
                 }
             }
         }
+        return changesDetected
     }
 
     @SuppressLint("DefaultLocale")
     fun receiveUpdate(parsed: ArrayList<String>) {
+        var changesDetected = false
+
         if (parsed[5].toUpperCase() == "I") {
-            findDifferenceAndUpdate(inputsList, parse(parsed[6]), Type.Input)
+            changesDetected = findDifferenceAndUpdate(inputsList, parse(parsed[6]), Type.Input)
         } else if (parsed[5].toUpperCase() == "O") {
-            findDifferenceAndUpdate(outputsList, parse(parsed[6]), Type.Output)
+            changesDetected = findDifferenceAndUpdate(outputsList, parse(parsed[6]), Type.Output)
+            requestWasSend = false
         }
-        handler.post {
-            notifyDataSetChanged()
-            sound.start()
+
+        if (changesDetected) {
+            handler.post {
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -134,13 +229,15 @@ class ModuleAdapter(
 
         @SuppressLint("SetTextI18n")
         fun bind(position: Int, inputValue: String, outputValue: String, inputType: String, outputType: String, inputHasChanged: Boolean, outputHasChanged: Boolean) {
-            view.row_index.text = "${position + 1}:"
+            view.row_index.text = "${position}:"
 
             view.input.setBackgroundColor(getColor(inputValue, inputType))
             view.output.setBackgroundColor(getColor(outputValue, outputType))
 
             view.input_wrapper.setBackgroundColor(getWrapperColor(inputHasChanged))
             view.output_wrapper.setBackgroundColor(getWrapperColor(outputHasChanged))
+
+            view.setOnClickListener { view -> onItemClicked(view, position) }
         }
     }
 }

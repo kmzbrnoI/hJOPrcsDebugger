@@ -50,6 +50,13 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
             this.mTcpClient!!.disconnect()
     }
 
+    fun changeOutput(port: Int, state: String) {
+        if (server != null && this.module != null) {
+            send("-;RCSd;SETOUT;" + this.module?.address + ";" + port + ";" + state)
+            send("-;RCSd;UPDATE;" + this.module?.address)
+        }
+    }
+
     fun connectToModule(module: Module) {
         if (server != null && this.module != null)
             disconnectModule()

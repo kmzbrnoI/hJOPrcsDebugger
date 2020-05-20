@@ -35,4 +35,9 @@
     <string name="inputs">Inputs</string>
     <string name="outputs">Outputs</string>
 
+    <string name="change_module_binary_value_from">Do you really want to change value from: </string>
+    <string name="change_module_binary_value_to">to: </string>
+
+    <string name="change_module_scom_to">Select new value:  </string>
+
 </resources>
