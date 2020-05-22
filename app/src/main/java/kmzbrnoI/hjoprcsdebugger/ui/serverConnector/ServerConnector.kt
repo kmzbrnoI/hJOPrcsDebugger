@@ -110,6 +110,9 @@ class ServerConnector : Fragment(), TCPClientResponse,
 
         val intent = Intent(context, ModulesListActivity::class.java)
         intent.putExtra("modules", modules[3])
+
+        TCPClientApplication.getInstance().delegateTCPResponse = null
+
         startActivity(intent)
     }
 
@@ -145,7 +148,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
         if (parsed[3].toUpperCase() == "OK") {
             arrayList.add(getString(R.string.sc_auth_ok))
             arrayList.add(getString(R.string.sc_getting_ors))
-            TCPClientApplication.getInstance().send("-;RCSd;LIST;")
+            TCPClientApplication.getInstance().loadModules()
         } else {
             arrayList.add(getString(R.string.sc_auth_err))
             if (parsed.size >= 5)

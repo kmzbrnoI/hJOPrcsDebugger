@@ -64,4 +64,5 @@ class Module: Fragment(), ModuleResponse {
         adapter.receiveUpdate(parsed)
     }
 
+    override fun response(output: Int, parsed: ArrayList<String>) {}
 }

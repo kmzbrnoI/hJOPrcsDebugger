@@ -57,6 +57,12 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
             this.mTcpClient!!.disconnect()
     }
 
+    fun loadModules() {
+        if (server != null) {
+            send("-;RCSd;LIST;")
+        }
+    }
+
     fun changeOutput(port: Int, state: String) {
         if (server != null && this.module != null) {
             send("-;RCSd;SETOUT;" + this.module?.address + ";" + port + ";" + state)
@@ -105,6 +111,7 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
 
         } else if (parsed[2] == "INFO") {
             delegateTCPResponse?.response(ON_RECEIVE_MODULES, parsed)
+            delegateModuleResponse?.response(ON_RECEIVE_MODULES, parsed)
 
         } else if (parsed[1] == "PING" && parsed.size > 2 && parsed[2].toUpperCase() == "REQ-RESP") {
             if (parsed.size >= 4) {

@@ -11,11 +11,13 @@ import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
+import kmzbrnoI.hjoprcsdebugger.constants.ON_RECEIVE_MODULES
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kmzbrnoI.hjoprcsdebugger.models.Module
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.responses.ModuleResponse
 import kmzbrnoI.hjoprcsdebugger.ui.moduleInfo.ModuleInfoActivity
+import kotlinx.android.synthetic.main.module.*
 import kotlinx.android.synthetic.main.modules_list.*
 import kotlinx.android.synthetic.main.modules_list.view.*
 import kotlin.collections.ArrayList
@@ -29,6 +31,8 @@ class ModulesList: Fragment(), ModuleResponse {
     private var selectedModuleInputs: String? = null
     private var selectedModuleOutputs: String? = null
 
+    var handler: Handler = Handler()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,16 +41,11 @@ class ModulesList: Fragment(), ModuleResponse {
         retainInstance = true
 
         TCPClientApplication.getInstance().activityContext = context
+        TCPClientApplication.getInstance().delegateModuleResponse = this
 
         val extras = activity?.intent?.extras
-        var modules = extras?.getString("modules")
 
-        // to be able to use parse method as it is
-        modules = modules?.replace("{", "[")
-        modules = modules?.replace("}", "]")
-
-        val modulesStringArray = modules?.let { ParseHelper().parse(it, "]", "[") }!!
-        modulesList = ArrayList(modulesStringArray.map { module -> Module(module) })
+        modulesList = parseModules(extras?.getString("modules"))
 
         return inflater.inflate(R.layout.modules_list, container, false).apply {
             modules_list_overlay.visibility = View.GONE
@@ -54,7 +53,7 @@ class ModulesList: Fragment(), ModuleResponse {
 
             mAdapter = ArrayAdapter(
                 context,
-                android.R.layout.simple_list_item_1, android.R.id.text1, modulesList.map { module -> "${module.address}: $module" }
+                android.R.layout.simple_list_item_1, android.R.id.text1, getModulesStrings(modulesList)
             )
             modules_list_view.adapter = mAdapter
 
@@ -82,6 +81,47 @@ class ModulesList: Fragment(), ModuleResponse {
                     .show()
                 true
             }
+
+            modules_swipe_refresh_layout.setOnRefreshListener {
+                reloadModules()
+            }
+        }
+    }
+
+    private fun getModulesStrings(modules: ArrayList<Module>): List<String> {
+        return modules.map { module -> "${module.address}: $module" }
+    }
+
+    private fun parseModules(modulesString: String?): ArrayList<Module> {
+        if (modulesString == null) {
+            return ArrayList()
+        }
+
+        // to be able to use parse method as it is
+        var modules = modulesString.replace("{", "[")
+        modules = modules.replace("}", "]")
+
+        val modulesStringArray = modules.let { ParseHelper().parse(it, "]", "[") }
+        return ArrayList(modulesStringArray.map { module -> Module(module) })
+    }
+
+    private fun reloadModules() {
+        modulesList.clear()
+
+        handler.post {
+            mAdapter.clear()
+            mAdapter.notifyDataSetChanged()
+        }
+        TCPClientApplication.getInstance().loadModules()
+    }
+
+    private fun onReceiveModules(modules: String) {
+        modulesList = parseModules(modules)
+
+        handler.post {
+            mAdapter.addAll(getModulesStrings(modulesList))
+            mAdapter.notifyDataSetChanged()
+            modules_swipe_refresh_layout?.isRefreshing = false
         }
     }
 
@@ -122,6 +162,14 @@ class ModulesList: Fragment(), ModuleResponse {
             startActivity(intent)
         }
 
+    }
+
+    override fun response(output: Int, parsed: ArrayList<String>) {
+        when (output) {
+            ON_RECEIVE_MODULES -> {
+                onReceiveModules(parsed[3])
+            }
+        }
     }
 }
 
