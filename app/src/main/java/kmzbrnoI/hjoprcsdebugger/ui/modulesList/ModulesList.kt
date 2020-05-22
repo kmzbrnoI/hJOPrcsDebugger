@@ -52,7 +52,7 @@ class ModulesList: Fragment(), ModuleResponse {
 
             mAdapter = ArrayAdapter(
                 context,
-                android.R.layout.simple_list_item_1, android.R.id.text1, modulesList.map { module -> module.toString() }
+                android.R.layout.simple_list_item_1, android.R.id.text1, modulesList.map { module -> "${module.address}: $module" }
             )
             modules_list_view.adapter = mAdapter
 
