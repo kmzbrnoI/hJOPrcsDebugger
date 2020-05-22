@@ -42,4 +42,6 @@
 
     <string name="ok">OK</string>
 
+    <string name="modules_list">Modules list</string>
+
 </resources>
