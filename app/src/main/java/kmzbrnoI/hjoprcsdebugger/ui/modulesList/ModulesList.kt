@@ -1,5 +1,6 @@
 package kmzbrnoI.hjoprcsdebugger.ui.modulesList
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
@@ -58,6 +60,27 @@ class ModulesList: Fragment(), ModuleResponse {
 
             modules_list_view.setOnItemClickListener { _, _, position, _ ->
                 connectToModule(position)
+            }
+
+            modules_list_view.setOnItemLongClickListener { _, _, position, _ ->
+                modules_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
+                AlertDialog.Builder(context)
+                    .setMessage(getString(R.string.module_address) + ": " + modulesList[position].address + "\n"
+                            + getString(R.string.module_name) + ": " + modulesList[position].name + "\n"
+                            + getString(R.string.module_type) + ": " + modulesList[position].type + "\n"
+                            + getString(R.string.module_status) + ": " + modulesList[position].status + "\n"
+                            + getString(R.string.module_firmware) + ": " + modulesList[position].firmware + "\n"
+                            + getString(R.string.module_inputsTypes) + ": " + modulesList[position].inputTypes + "\n"
+                            + getString(R.string.module_outputsTypes) + ": " + modulesList[position].outputTypes + "\n"
+                    )
+                    .setPositiveButton(
+                        getString(R.string.ok)
+                    ) { _, _ ->
+                        modules_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                    }
+                    .setCancelable(false)
+                    .show()
+                true
             }
         }
     }

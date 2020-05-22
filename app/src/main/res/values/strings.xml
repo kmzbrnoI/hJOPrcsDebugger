@@ -44,4 +44,12 @@
 
     <string name="modules_list">Modules list</string>
 
+    <string name="module_address">Address</string>
+    <string name="module_name">Name</string>
+    <string name="module_type">Type</string>
+    <string name="module_status">Status</string>
+    <string name="module_firmware">Firmware</string>
+    <string name="module_inputsTypes">Input types</string>
+    <string name="module_outputsTypes">Output types</string>
+
 </resources>
