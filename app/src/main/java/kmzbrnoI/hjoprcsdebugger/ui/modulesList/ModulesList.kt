@@ -158,6 +158,7 @@ class ModulesList: Fragment(), ModuleResponse {
                 intent.putExtra("inputsTypes", modulesList[index].inputTypes)
                 intent.putExtra("outputsTypes", modulesList[index].outputTypes)
                 intent.putExtra("nameOfModule", modulesList[index].name)
+                intent.putExtra("addressOfModule", modulesList[index].address)
             }
             startActivity(intent)
         }

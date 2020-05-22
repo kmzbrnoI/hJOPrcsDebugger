@@ -12,7 +12,7 @@ class ModuleInfoActivity: AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        title = intent.extras?.getString("nameOfModule")
+        title = intent.extras?.getString("addressOfModule") + ": " + intent.extras?.getString("nameOfModule")
 
         if (savedInstanceState == null) {
             val fragment = Module()
