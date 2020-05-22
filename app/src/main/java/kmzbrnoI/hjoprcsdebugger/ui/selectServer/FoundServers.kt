@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import kmzbrnoI.hjoprcsdebugger.constants.REQUEST_WIFI_PERMISSION
 import kmzbrnoI.hjoprcsdebugger.responses.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.network.UDPDiscover
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
+import kotlinx.android.synthetic.main.select_found_server.*
 import kotlinx.android.synthetic.main.select_found_server.view.*
 import java.util.ArrayList
 
@@ -26,6 +28,8 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
     lateinit var foundServersAdapter: ArrayAdapter<String>
 
     var found: ArrayList<String> = ArrayList()
+
+    private var handler: Handler = Handler()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,7 +90,6 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
 
             swipe_refresh_layout.setOnRefreshListener {
                 discoverServers()
-                swipe_refresh_layout.isRefreshing = false
             }
         }
     }
@@ -109,6 +112,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
         val udpDiscover =
             UDPDiscover(context?.getSystemService(Context.WIFI_SERVICE) as WifiManager)
         udpDiscover.delegate = this
+        ServerDb.getInstance().found.clear()
         udpDiscover.execute()
     }
 
@@ -126,7 +130,10 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             found.add(s.name + "\t" + s.host + "\n" + s.type + " \t" + statusText)
         }
 
-        foundServersAdapter.notifyDataSetChanged()
+        handler.post {
+            foundServersAdapter.notifyDataSetChanged()
+            swipe_refresh_layout?.isRefreshing = false
+        }
     }
 
     override fun discoveringFinished(output: Int) {

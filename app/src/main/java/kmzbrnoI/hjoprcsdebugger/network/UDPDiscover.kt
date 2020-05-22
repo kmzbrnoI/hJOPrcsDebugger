@@ -47,6 +47,7 @@ class UDPDiscover(internal var mWifi: WifiManager) : AsyncTask<String, Server, S
             }
         } catch (e: SocketTimeoutException) {
             Log.d("listening exception", "S: time out '$e'") // timeout OK
+            delegate?.discoveringFinished(FOUND_SERVERS_RELOAD)
         }
     }
 
