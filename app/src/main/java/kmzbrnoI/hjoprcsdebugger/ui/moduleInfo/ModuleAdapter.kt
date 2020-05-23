@@ -2,6 +2,7 @@ package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Handler
@@ -105,21 +106,19 @@ class ModuleAdapter(
 
             AlertDialog.Builder(parent.context)
                 .setTitle(parent.context.getString(R.string.change_module_scom_to))
-                .setSingleChoiceItems(SCOMTypesStrings, selectedId) { _, which ->
-                    selectedId = which
-                }
-                .setPositiveButton(
-                    parent.context.getString(R.string.yes)
-                ) { _, _ ->
-                    if (!wasInList && selectedId == SCOMTypes.size) {
-                        selectedId = outputsList[position].toInt()
+                .setSingleChoiceItems(SCOMTypesStrings, selectedId) { dialog, which ->
+                    var selectedOption = which
+
+                    if (!wasInList && selectedOption == SCOMTypes.size) {
+                        selectedOption = outputsList[position].toInt()
                     }
-                    TCPClientApplication.getInstance().changeOutput(position, selectedId.toString())
+                    TCPClientApplication.getInstance().changeOutput(position, selectedOption.toString())
                     requestWasSend = true
 
                     view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+
+                    dialog.dismiss()
                 }
-                .setNegativeButton(parent.context.getString(R.string.no)) { _, _ -> }
                 .setCancelable(false)
                 .show()
         }
