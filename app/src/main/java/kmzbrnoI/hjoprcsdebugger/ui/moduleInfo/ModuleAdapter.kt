@@ -65,8 +65,6 @@ class ModuleAdapter(
     }
 
     private fun onItemClicked(view: View, position: Int) {
-        view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.colorPrimaryLighten))
-
         if (outputsTypes[position] == "B" || outputsTypes[position] == "I") {
             var newValue = ""
 
@@ -90,13 +88,8 @@ class ModuleAdapter(
                     requestWasSend = true
 
                     view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
-                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
                 }
-                .setNegativeButton(
-                    parent.context.getString(R.string.no)
-                ) { _, _ ->
-                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
-                }
+                .setNegativeButton(parent.context.getString(R.string.no)) { _, _ -> }
                 .setCancelable(false)
                 .show()
         } else if (outputsTypes[position] == "S") {
@@ -125,13 +118,8 @@ class ModuleAdapter(
                     requestWasSend = true
 
                     view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
-                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
                 }
-                .setNegativeButton(
-                    parent.context.getString(R.string.no)
-                ) { _, _ ->
-                    view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.transparent))
-                }
+                .setNegativeButton(parent.context.getString(R.string.no)) { _, _ -> }
                 .setCancelable(false)
                 .show()
         }
@@ -237,7 +225,7 @@ class ModuleAdapter(
             view.input_wrapper.setBackgroundColor(getWrapperColor(inputHasChanged))
             view.output_wrapper.setBackgroundColor(getWrapperColor(outputHasChanged))
 
-            view.setOnClickListener { view -> onItemClicked(view, position) }
+            view.output.setOnClickListener { view -> onItemClicked(view, position) }
         }
     }
 }
