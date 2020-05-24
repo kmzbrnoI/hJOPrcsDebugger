@@ -160,6 +160,10 @@ class ModulesList: Fragment(), ModuleResponse {
                 intent.putExtra("nameOfModule", modulesList[index].name)
                 intent.putExtra("addressOfModule", modulesList[index].address)
             }
+
+            val tcp = TCPClientApplication.getInstance()
+            tcp.delegateModuleResponse = null
+
             startActivity(intent)
         }
 
