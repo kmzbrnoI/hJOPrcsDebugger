@@ -198,7 +198,11 @@ class ModuleAdapter(
                     color = R.color.green
                 }
             } else if (type == "S") {
-                color = R.color.blue
+                if (value == "0") {
+                    color = R.color.blue
+                } else {
+                    color = R.color.purple
+                }
             }
 
             return ContextCompat.getColor(itemView.context, color)

@@ -10,6 +10,7 @@
     <color name="red">#FF0000</color>
     <color name="green">#7CFC00</color>
     <color name="blue">#0000FF</color>
-    <color name="yellow">#CCCC00</color>
     <color name="black">#000000</color>
+    <color name="yellow">#CCCC00</color>
+    <color name="purple">#BA55D3</color>
 </resources>
