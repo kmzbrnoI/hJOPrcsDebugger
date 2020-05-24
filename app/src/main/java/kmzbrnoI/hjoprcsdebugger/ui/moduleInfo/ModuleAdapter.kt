@@ -66,7 +66,7 @@ class ModuleAdapter(
     }
 
     private fun onItemClicked(view: View, position: Int) {
-        if (outputsTypes[position] == "B" || outputsTypes[position] == "I") {
+        if (outputsTypes[position] == "I") {
             var newValue = ""
 
             if (outputsList[position] == "0") {
@@ -75,24 +75,19 @@ class ModuleAdapter(
                 newValue = "0"
             }
 
-            AlertDialog.Builder(parent.context)
-                .setMessage(
-                    parent.context.getString(R.string.change_module_binary_value_from) + " "
-                        + outputsList[position] + " "
-                        + parent.context.getString(R.string.change_module_binary_value_to) + " "
-                        + newValue
-                )
-                .setPositiveButton(
-                    parent.context.getString(R.string.yes)
-                ) { _, _ ->
-                    TCPClientApplication.getInstance().changeOutput(position, newValue)
-                    requestWasSend = true
+            view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+            TCPClientApplication.getInstance().changeOutput(position, newValue)
+            requestWasSend = true
+        } else if (outputsTypes[position] == "B") {
+            var newValue = "0"
 
-                    view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
-                }
-                .setNegativeButton(parent.context.getString(R.string.no)) { _, _ -> }
-                .setCancelable(false)
-                .show()
+            if (outputsList[position] == "0") {
+                newValue = "1"
+            }
+
+            view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+            TCPClientApplication.getInstance().changeOutput(position, newValue)
+            requestWasSend = true
         } else if (outputsTypes[position] == "S") {
             var SCOMTypesStrings = getSCOMTypesStrings()
             var selectedId = outputsList[position].toInt()
