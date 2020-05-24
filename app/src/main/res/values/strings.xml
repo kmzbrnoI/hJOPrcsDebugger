@@ -52,4 +52,6 @@
     <string name="module_inputsTypes">Input types</string>
     <string name="module_outputsTypes">Output types</string>
 
+    <string name="turn_on_wifi">Please, turn on wifi on your phone and try it again.</string>
+
 </resources>

@@ -49,7 +49,9 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
                 )
                 == PackageManager.PERMISSION_GRANTED
             ) {
-                discoverServers()
+                if (checkWifi()) {
+                    discoverServers()
+                }
             } else {
                 requestPermissions(
                     arrayOf(android.Manifest.permission.ACCESS_WIFI_STATE),
@@ -94,6 +96,23 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
         }
     }
 
+    private fun checkWifi(): Boolean {
+        var isWifiEnabled = false
+        context?.let{ c->
+            val wifiManager = c.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            isWifiEnabled = wifiManager.isWifiEnabled
+            if (!isWifiEnabled) {
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.turn_on_wifi)
+                    .setPositiveButton(getString(R.string.ok)) { _, _ -> }
+                    .setCancelable(false)
+                    .show()
+            }
+        }
+
+        return isWifiEnabled
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -109,11 +128,15 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
     }
 
     private fun discoverServers() {
-        val udpDiscover =
-            UDPDiscover(context?.getSystemService(Context.WIFI_SERVICE) as WifiManager)
-        udpDiscover.delegate = this
-        ServerDb.getInstance().found.clear()
-        udpDiscover.execute()
+        if (checkWifi()) {
+            val udpDiscover =
+                UDPDiscover(context?.getSystemService(Context.WIFI_SERVICE) as WifiManager)
+            udpDiscover.delegate = this
+            ServerDb.getInstance().found.clear()
+            udpDiscover.execute()
+        } else {
+            swipe_refresh_layout?.isRefreshing = false
+        }
     }
 
     private fun connectToServer(context: Context, index: Int) {
