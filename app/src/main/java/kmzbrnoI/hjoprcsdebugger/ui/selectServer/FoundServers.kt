@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.select_found_server.view.*
 import java.util.ArrayList
 
 class FoundServers : Fragment(), UDPDiscoverResponse {
-    lateinit var foundServersAdapter: ArrayAdapter<String>
+    private var foundServersAdapter: ArrayAdapter<String>? = null
 
     var found: ArrayList<String> = ArrayList()
 
@@ -134,6 +134,9 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             udpDiscover.delegate = this
             ServerDb.getInstance().found.clear()
             udpDiscover.execute()
+
+            found.clear()
+            foundServersAdapter?.notifyDataSetChanged()
         } else {
             swipe_refresh_layout?.isRefreshing = false
         }
@@ -154,7 +157,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
         }
 
         handler.post {
-            foundServersAdapter.notifyDataSetChanged()
+            foundServersAdapter?.notifyDataSetChanged()
             swipe_refresh_layout?.isRefreshing = false
         }
     }
