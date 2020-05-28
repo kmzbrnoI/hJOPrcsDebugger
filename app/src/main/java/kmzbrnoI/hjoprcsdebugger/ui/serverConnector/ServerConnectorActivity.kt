@@ -25,4 +25,10 @@ class ServerConnectorActivity: AppCompatActivity() {
         onBackPressed()
         return true
     }
+
+    override fun onBackPressed() {
+        TCPClientApplication.getInstance().disconnect()
+
+        super.onBackPressed()
+    }
 }

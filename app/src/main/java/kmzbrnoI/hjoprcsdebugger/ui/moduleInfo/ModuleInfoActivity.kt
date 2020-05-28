@@ -23,8 +23,15 @@ class ModuleInfoActivity: AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        TCPClientApplication.getInstance().disconnectModule()
         onBackPressed()
+
         return true
+    }
+
+    override fun onBackPressed() {
+        TCPClientApplication.getInstance().disconnectModule()
+        finish()
+
+        super.onBackPressed()
     }
 }

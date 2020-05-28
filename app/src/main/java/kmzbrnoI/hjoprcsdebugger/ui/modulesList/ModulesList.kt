@@ -129,6 +129,12 @@ class ModulesList: Fragment(), ModuleResponse {
         super.onResume()
         modules_list_overlay.visibility = View.GONE
         modules_list_loadBar.visibility = View.GONE
+
+        val tcp = TCPClientApplication.getInstance()
+        tcp.delegateModuleResponse = this
+
+        selectedModuleInputs = null
+        selectedModuleOutputs = null
     }
 
     private fun connectToModule(index: Int) {
