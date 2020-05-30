@@ -62,7 +62,7 @@ class ModulesList: Fragment(), ModuleResponse {
             }
 
             modules_list_view.setOnItemLongClickListener { _, _, position, _ ->
-                modules_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
+                modules_list_view.getChildAt( position - modules_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
                 AlertDialog.Builder(context)
                     .setMessage(getString(R.string.module_address) + ": " + modulesList[position].address + "\n"
                             + getString(R.string.module_name) + ": " + modulesList[position].name + "\n"
@@ -75,7 +75,7 @@ class ModulesList: Fragment(), ModuleResponse {
                     .setPositiveButton(
                         getString(R.string.ok)
                     ) { _, _ ->
-                        modules_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        modules_list_view.getChildAt(position - modules_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                     }
                     .setCancelable(false)
                     .show()

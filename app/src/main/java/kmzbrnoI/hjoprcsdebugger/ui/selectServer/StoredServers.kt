@@ -68,19 +68,19 @@ class StoredServers : Fragment(), ServerDbResponse {
             }
 
             stored_servers_list_view.setOnItemLongClickListener { _, _, position, _ ->
-                stored_servers_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
+                stored_servers_list_view.getChildAt(position - stored_servers_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
                 AlertDialog.Builder(context)
                     .setMessage(R.string.delete_server_alert)
                     .setPositiveButton(
                         getString(R.string.yes)
                     ) { _, _ ->
                         removeServer(position)
-                        stored_servers_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        stored_servers_list_view.getChildAt(position - stored_servers_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                     }
                     .setNegativeButton(
                         getString(R.string.no)
                     ) { _, _ ->
-                        stored_servers_list_view.getChildAt(position).setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        stored_servers_list_view.getChildAt(position - stored_servers_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                     }
                     .setCancelable(false)
                     .show()
