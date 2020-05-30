@@ -28,13 +28,13 @@ class ModulesListActivity: AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
+
         TCPClientApplication.getInstance().disconnectModule()
         TCPClientApplication.getInstance().disconnect()
 
         startActivity(parentActivityIntent)
 
         finish()
-
-        super.onBackPressed()
     }
 }

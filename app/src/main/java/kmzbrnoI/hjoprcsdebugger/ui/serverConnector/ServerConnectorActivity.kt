@@ -21,13 +21,13 @@ class ServerConnectorActivity: AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        TCPClientApplication.getInstance().disconnect()
         onBackPressed()
         return true
     }
 
     override fun onBackPressed() {
         TCPClientApplication.getInstance().disconnect()
+        finish()
 
         super.onBackPressed()
     }

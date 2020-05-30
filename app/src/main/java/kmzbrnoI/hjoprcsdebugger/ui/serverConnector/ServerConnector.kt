@@ -112,8 +112,10 @@ class ServerConnector : Fragment(), TCPClientResponse,
         intent.putExtra("modules", modules[3])
 
         TCPClientApplication.getInstance().delegateTCPResponse = null
+        TCPClientApplication.getInstance().mTcpClient?.delegate = null
 
         startActivity(intent)
+        activity?.finish()
     }
 
     private fun onHandShake(parsed: ArrayList<String>) {
