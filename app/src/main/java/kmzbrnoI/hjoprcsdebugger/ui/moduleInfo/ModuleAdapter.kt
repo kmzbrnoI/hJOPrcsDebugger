@@ -2,6 +2,7 @@ package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.media.MediaPlayer
 import android.media.RingtoneManager
@@ -19,21 +20,20 @@ import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kotlinx.android.synthetic.main.module_row.view.*
 
 class ModuleAdapter(
+    private var context: Context?,
     inputs: String?,
     outputs: String?,
     private var inputsTypes: ArrayList<String>,
     private var outputsTypes: ArrayList<String>
-): RecyclerView.Adapter<ModuleAdapter.ModuleViewHolder>() {
+) : RecyclerView.Adapter<ModuleAdapter.ModuleViewHolder>() {
     private var handler: Handler = Handler()
-    private lateinit var sound: MediaPlayer
+    var sound: MediaPlayer? = null
 
-    private var inputsList= parse(inputs)
-    private var outputsList = parse(outputs)
+    private var inputsList: ArrayList<String> = parse(inputs)
+    private var outputsList: ArrayList<String> = parse(outputs)
 
     private var inputsChanged =  ArrayList<Boolean>()
     private var outputsChanged = ArrayList<Boolean>()
-
-    private lateinit var parent: ViewGroup
 
     private var requestWasSend = false
 
@@ -42,11 +42,13 @@ class ModuleAdapter(
         Output,
     }
 
+    init {
+        context?.let { c ->
+            sound = MediaPlayer.create(c, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModuleViewHolder {
-        sound = MediaPlayer.create(parent.context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-
-        this.parent = parent
-
         for (i in 0 until inputsList.size) {
             inputsChanged.add(false)
         }
@@ -99,8 +101,8 @@ class ModuleAdapter(
                 wasInList = false
             }
 
-            AlertDialog.Builder(parent.context)
-                .setTitle(parent.context.getString(R.string.change_module_scom_to))
+            AlertDialog.Builder(context)
+                .setTitle(context?.getString(R.string.change_module_scom_to))
                 .setSingleChoiceItems(SCOMTypesStrings, selectedId) { dialog, which ->
                     var selectedOption = which
 
@@ -154,7 +156,7 @@ class ModuleAdapter(
                             }, 5000)
                         }
                         handler.post {
-                            sound.start()
+                            sound?.start()
                         }
                     }
                 }

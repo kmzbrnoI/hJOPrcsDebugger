@@ -13,7 +13,7 @@ import kmzbrnoI.hjoprcsdebugger.responses.ModuleResponse
 import kotlinx.android.synthetic.main.module.view.*
 
 class Module: Fragment(), ModuleResponse {
-    private lateinit var adapter: ModuleAdapter
+    public lateinit var adapter: ModuleAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +40,7 @@ class Module: Fragment(), ModuleResponse {
             outputsTypes = parseTypes(e.getString("outputsTypes"))
         }
 
-        adapter = ModuleAdapter(inputs, outputs, inputsTypes, outputsTypes)
+        adapter = ModuleAdapter(context, inputs, outputs, inputsTypes, outputsTypes)
 
         return inflater.inflate(R.layout.module, container, false).apply {
             modules_list_view.layoutManager = LinearLayoutManager(context)

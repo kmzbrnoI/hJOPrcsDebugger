@@ -6,6 +6,8 @@ import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 
 class ModuleInfoActivity: AppCompatActivity() {
+    private lateinit var module: Module
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.module_info_activity)
@@ -15,9 +17,9 @@ class ModuleInfoActivity: AppCompatActivity() {
         title = intent.extras?.getString("addressOfModule") + ": " + intent.extras?.getString("nameOfModule")
 
         if (savedInstanceState == null) {
-            val fragment = Module()
+            module = Module()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.module_info_activity, fragment)
+                .replace(R.id.module_info_activity, module)
                 .commit()
         }
     }
@@ -30,6 +32,7 @@ class ModuleInfoActivity: AppCompatActivity() {
 
     override fun onBackPressed() {
         TCPClientApplication.getInstance().disconnectModule()
+        module.adapter.sound?.release()
         finish()
 
         super.onBackPressed()
