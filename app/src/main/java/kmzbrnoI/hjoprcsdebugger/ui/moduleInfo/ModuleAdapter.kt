@@ -109,10 +109,11 @@ class ModuleAdapter(
                     if (!wasInList && selectedOption == SCOMTypes.size) {
                         selectedOption = outputsList[position].toInt()
                     }
-                    TCPClientApplication.getInstance().changeOutput(position, selectedOption.toString())
-                    requestWasSend = true
-
-                    view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+                    if (outputsList[position] != selectedOption.toString()) {
+                        TCPClientApplication.getInstance().changeOutput(position, selectedOption.toString())
+                        requestWasSend = true
+                        view.output.setBackgroundColor(ContextCompat.getColor(view.context,  R.color.yellow))
+                    }
 
                     dialog.dismiss()
                 }
