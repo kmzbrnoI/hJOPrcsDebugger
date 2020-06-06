@@ -30,6 +30,7 @@ class SelectServerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.server_pager_activity)
+        mPager = findViewById(R.id.servers_pager)
         setTitle(getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME)
 
         tabTitles = arrayListOf(getString(R.string.discovered_servers), getString(R.string.saved_servers))
