@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">hJOPrcsDebugger</string>
+    <string name="app_name">hJOP RCS Debugger</string>
     <string name="reload_button">Reload servers</string>
     <string name="discovered_servers">Discovered servers</string>
     <string name="saved_servers">Saved servers</string>
