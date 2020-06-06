@@ -1,16 +1,20 @@
 package kmzbrnoI.hjoprcsdebugger.ui.selectServer
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
+import kmzbrnoI.hjoprcsdebugger.BuildConfig
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.ui.createServer.CreateServerActivity
 import kotlinx.android.synthetic.main.server_pager_activity.*
+
 
 /**
  * The number of pages (wizard steps) to show in this demo.
@@ -26,6 +30,7 @@ class SelectServerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.server_pager_activity)
+        setTitle(getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME)
 
         tabTitles = arrayListOf(getString(R.string.discovered_servers), getString(R.string.saved_servers))
 
