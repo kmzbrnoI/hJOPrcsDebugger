@@ -67,7 +67,7 @@ class ModulesList: Fragment(), ModuleResponse {
                     .setMessage(getString(R.string.module_address) + ": " + modulesList[position].address + "\n"
                             + getString(R.string.module_name) + ": " + modulesList[position].name + "\n"
                             + getString(R.string.module_type) + ": " + modulesList[position].type + "\n"
-                            + getString(R.string.module_status) + ": " + modulesList[position].status + "\n"
+                            + getString(R.string.module_present) + ": " + modulesList[position].status + "\n"
                             + getString(R.string.module_firmware) + ": " + modulesList[position].firmware + "\n"
                             + getString(R.string.module_inputsTypes) + ": " + modulesList[position].inputTypes + "\n"
                             + getString(R.string.module_outputsTypes) + ": " + modulesList[position].outputTypes + "\n"
