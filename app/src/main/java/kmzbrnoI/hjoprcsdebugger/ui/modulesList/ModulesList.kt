@@ -72,12 +72,13 @@ class ModulesList: Fragment(), ModuleResponse {
                             + getString(R.string.module_inputsTypes) + ": " + modulesList[position].inputTypes + "\n"
                             + getString(R.string.module_outputsTypes) + ": " + modulesList[position].outputTypes + "\n"
                     )
+                    .setTitle(modulesList[position].toString())
                     .setPositiveButton(
                         getString(R.string.ok)
                     ) { _, _ ->
                         modules_list_view.getChildAt(position - modules_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                     }
-                    .setCancelable(false)
+                    .setCancelable(true)
                     .show()
                 true
             }
@@ -89,7 +90,7 @@ class ModulesList: Fragment(), ModuleResponse {
     }
 
     private fun getModulesStrings(modules: ArrayList<Module>): List<String> {
-        return modules.map { module -> "${module.address}: $module" }
+        return modules.map { module -> module.toString() }
     }
 
     private fun parseModules(modulesString: String?): ArrayList<Module> {

@@ -45,6 +45,6 @@ class Module {
     }
 
     override fun toString(): String {
-        return name
+        return this.address.toString() + ": " + this.name
     }
 }
