@@ -116,7 +116,7 @@ class ModuleAdapter(
 
                     dialog.dismiss()
                 }
-                .setCancelable(false)
+                .setCancelable(true)
                 .show()
         }
     }
