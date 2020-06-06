@@ -87,6 +87,7 @@ class TCPClientApplication: Application(), TCPClient.Events {
 
     fun send(message: String) {
         if (mTcpClient == null) return
+        if (!mTcpClient!!.connected()) return
 
         try {
             mTcpClient!!.send(message)
