@@ -76,15 +76,15 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
         return socket != null
     }
 
-    fun listen(listener: OnMessageReceivedListener) {
+    fun listen(events: Events) {
         mRun = true
         if (socket != null) return
-        val st = SocketThread(listener)
+        val st = SocketThread(events)
         Thread{ st.start() }.start()
     }
 
     inner class SocketThread internal constructor(
-        internal var m_listener: OnMessageReceivedListener
+        internal var m_events: Events
     ) : Thread() {
         override fun start() {
             try {
@@ -105,20 +105,24 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
                 return
             }
 
-            wt = WriteThread(socket!!)
+            wt = WriteThread(socket!!, m_events)
             Thread{ wt!!.start() }.start()
-            rt = ReadThread(socket!!, m_listener)
+            rt = ReadThread(socket!!, m_events)
             Thread{ rt!!.start() }.start()
 
             delegate?.response(CONNECTION_ESTABLISHED)
         }
     }
 
-    interface OnMessageReceivedListener {
+    interface Events {
         fun onMessageReceived(message: String)
+        fun onDisconnected()
     }
 
-    inner class WriteThread internal constructor(private val m_socket: Socket) : Thread() {
+    inner class WriteThread internal constructor(
+        private val m_socket: Socket,
+        private val m_events: Events
+    ) : Thread() {
         private val lock = ReentrantLock()
         private val condition = lock.newCondition()
         private val m_queue = ArrayList<ByteArray>()
@@ -130,6 +134,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
             } catch (e: IOException) {
                 Log.e("TCP", "Socket IO exception", e)
                 disconnect(true, false)
+                m_events.onDisconnected()
                 return
             }
 
@@ -146,6 +151,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
 
                         } catch (e: IOException) {
                             disconnect(true, false)
+                            m_events.onDisconnected()
                             return
                         }
 
@@ -165,7 +171,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
 
     inner class ReadThread internal constructor(
         private val m_socket: Socket,
-        private val m_listener: OnMessageReceivedListener
+        private val m_events: Events
     ) : Thread() {
 
         override fun start() {
@@ -179,6 +185,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
             } catch (e: IOException) {
                 Log.e("TCP", "Socket IO exception", e)
                 disconnect(false, true)
+                m_events.onDisconnected()
                 return
             }
 
@@ -189,6 +196,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
                         continue
                     else if (new_len == -1) {
                         disconnect(false, true)
+                        m_events.onDisconnected()
                         return
                     }
 
@@ -205,7 +213,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
                             else
                                 end = i - last
 
-                            m_listener.onMessageReceived(String(range, 0, end))
+                            m_events.onMessageReceived(String(range, 0, end))
                             last = i + 1
                         }
                     }
@@ -215,6 +223,7 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
                     total_len = total_len - last
                 } catch (e: IOException) {
                     disconnect(false, true)
+                    m_events.onDisconnected()
                     return
                 }
 

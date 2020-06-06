@@ -16,7 +16,7 @@ import kmzbrnoI.hjoprcsdebugger.responses.ModuleResponse
 import java.net.ConnectException
 
 @SuppressLint("Registered")
-class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
+class TCPClientApplication: Application(), TCPClient.Events {
     var delegateTCPResponse: TCPClientResponse? = null
     var delegateModuleResponse: ModuleResponse? = null
 
@@ -98,6 +98,18 @@ class TCPClientApplication: Application(), TCPClient.OnMessageReceivedListener {
 
     fun connected(): Boolean {
         return mTcpClient != null && mTcpClient!!.connected()
+    }
+
+    override fun onDisconnected() {
+        activityHandler.post {
+            activityContext?.let { context ->
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.disconnected)
+                    .setPositiveButton(context.getString(R.string.ok), null)
+                    .setCancelable(false)
+                    .show()
+            }
+        }
     }
 
     override fun onMessageReceived(message: String) {
