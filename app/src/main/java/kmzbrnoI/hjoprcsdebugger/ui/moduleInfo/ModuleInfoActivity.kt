@@ -1,6 +1,7 @@
 package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
@@ -11,6 +12,7 @@ class ModuleInfoActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.module_info_activity)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
