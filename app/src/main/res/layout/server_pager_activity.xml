@@ -37,13 +37,11 @@
         android:id="@+id/create_new_server_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_gravity="end|bottom"
         android:backgroundTint="@color/colorPrimaryLighten"
         android:src="@android:drawable/ic_input_add"
         android:tint="@color/colorPrimaryDark"
         app:backgroundTint="@color/colorPrimaryLighten"
-        app:maxImageSize="36dp"
-        app:rippleColor="@android:color/transparent"
-        />
+        android:layout_margin="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
