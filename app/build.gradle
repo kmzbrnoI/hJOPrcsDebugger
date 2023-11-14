@@ -6,11 +6,11 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     namespace 'kmzbrnoI.hjoprcsdebugger'
-    compileSdk 31
+    compileSdk 33
     defaultConfig {
         applicationId "kmzbrnoI.hjoprcsdebugger"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 2
         versionName "1.1"
     }
