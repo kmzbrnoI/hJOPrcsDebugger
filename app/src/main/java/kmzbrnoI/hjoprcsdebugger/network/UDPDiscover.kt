@@ -78,10 +78,10 @@ class UDPDiscover(internal var mWifi: WifiManager) : AsyncTask<String, Server, S
                         } else {
                             if (!isIPv4) {
                                 val delim = sAddr.indexOf('%') // drop ip6 zone suffix
-                                return if (delim < 0) sAddr.toUpperCase() else sAddr.substring(
+                                return if (delim < 0) sAddr.uppercase() else sAddr.substring(
                                     0,
                                     delim
-                                ).toUpperCase()
+                                ).uppercase()
                             }
                         }
                     }

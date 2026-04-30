@@ -151,9 +151,9 @@ class ModulesList: Fragment(), ModuleResponse {
     }
 
     override fun response(parsed: ArrayList<String>) {
-        if (parsed[5].toUpperCase() == "I") {
+        if (parsed[5].uppercase() == "I") {
             selectedModuleInputs = parsed[6]
-        } else if (parsed[5].toUpperCase() == "O") {
+        } else if (parsed[5].uppercase() == "O") {
             selectedModuleOutputs = parsed[6]
         }
 

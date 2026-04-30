@@ -117,7 +117,7 @@ class TCPClientApplication: Application(), TCPClient.Events {
         val parsed = ParseHelper().parse(message, ";", "")
 
         if (parsed.size < 2 || parsed.get(0) != "-") return
-        parsed[1] = parsed[1].toUpperCase()
+        parsed[1] = parsed[1].uppercase()
 
         if (parsed[1] == "HELLO") {
             delegateTCPResponse?.response(HAND_SHAKE, parsed)
@@ -126,7 +126,7 @@ class TCPClientApplication: Application(), TCPClient.Events {
             delegateTCPResponse?.response(ON_RECEIVE_MODULES, parsed)
             delegateModuleResponse?.response(ON_RECEIVE_MODULES, parsed)
 
-        } else if (parsed[1] == "PING" && parsed.size > 2 && parsed[2].toUpperCase() == "REQ-RESP") {
+        } else if (parsed[1] == "PING" && parsed.size > 2 && parsed[2].uppercase() == "REQ-RESP") {
             if (parsed.size >= 4) {
                 this.send("-;PONG;" + parsed[3] + '\n'.toString())
             } else {

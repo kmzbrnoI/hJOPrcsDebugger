@@ -170,9 +170,9 @@ class ModuleAdapter(
     fun receiveUpdate(parsed: ArrayList<String>) {
         var changesDetected = false
 
-        if (parsed[5].toUpperCase() == "I") {
+        if (parsed[5].uppercase() == "I") {
             changesDetected = findDifferenceAndUpdate(inputsList, parse(parsed[6]), Type.Input)
-        } else if (parsed[5].toUpperCase() == "O") {
+        } else if (parsed[5].uppercase() == "O") {
             changesDetected = findDifferenceAndUpdate(outputsList, parse(parsed[6]), Type.Output)
             requestWasSend = false
         }
