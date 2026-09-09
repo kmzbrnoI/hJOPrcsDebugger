@@ -94,6 +94,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
 
     fun editLogin(message: String) {
         handler.post {
+            if (!isAdded) return@post
             val dialog = LoginDialog(message)
             dialog.delegate = this
             val transition = fragmentManager?.beginTransaction()
@@ -105,68 +106,65 @@ class ServerConnector : Fragment(), TCPClientResponse,
     }
 
     private fun onReceiveModules(modules: ArrayList<String>) {
-        arrayList.add(getString(R.string.sc_done))
         handler.post {
+            if (!isAdded) return@post
+            arrayList.add(getString(R.string.sc_done))
             mAdapter.notifyDataSetChanged()
             _binding?.serverLoadBar?.visibility = View.GONE
+
+            val intent = Intent(context, ModulesListActivity::class.java)
+            intent.putExtra("modules", modules[3])
+
+            TCPClientApplication.getInstance().delegateTCPResponse = null
+            TCPClientApplication.getInstance().mTcpClient?.delegate = null
+
+            startActivity(intent)
+            activity?.finish()
         }
-
-        val intent = Intent(context, ModulesListActivity::class.java)
-        intent.putExtra("modules", modules[3])
-
-        TCPClientApplication.getInstance().delegateTCPResponse = null
-        TCPClientApplication.getInstance().mTcpClient?.delegate = null
-
-        startActivity(intent)
-        activity?.finish()
     }
 
     private fun onHandShake(parsed: ArrayList<String>) {
-       if (parsed.size < 3 || !listOf(*serverSupportedVersions).contains(parsed[2])) {
-            arrayList.add(getString(R.string.sc_version_warning))
-        } else {
-            arrayList.add(getString(R.string.sc_connection_ok))
-       }
-
         handler.post {
-            mAdapter.notifyDataSetChanged()
-        }
-
-        if (TCPClientApplication.getInstance().server!!.username.isEmpty() || TCPClientApplication.getInstance().server!!.password.isEmpty()) {
-            arrayList.add(getString(R.string.sc_auth_wait))
-            handler.post {
-                _binding?.serverLoadBar?.visibility = View.GONE
+            if (!isAdded) return@post
+            if (parsed.size < 3 || !listOf(*serverSupportedVersions).contains(parsed[2])) {
+                arrayList.add(getString(R.string.sc_version_warning))
+            } else {
+                arrayList.add(getString(R.string.sc_connection_ok))
             }
-            editLogin(getString(R.string.login_enter))
-        } else {
-            arrayList.add(getString(R.string.sc_authorizing))
-            TCPClientApplication
-                .getInstance()
-                .send("-;RCSd;AUTH;{" + TCPClientApplication.getInstance().server!!.username + "};" + TCPClientApplication.getInstance().server!!.password)
-            handler.post {
+
+            mAdapter.notifyDataSetChanged()
+
+            if (TCPClientApplication.getInstance().server!!.username.isEmpty() || TCPClientApplication.getInstance().server!!.password.isEmpty()) {
+                arrayList.add(getString(R.string.sc_auth_wait))
+                _binding?.serverLoadBar?.visibility = View.GONE
+                editLogin(getString(R.string.login_enter))
+            } else {
+                arrayList.add(getString(R.string.sc_authorizing))
+                TCPClientApplication
+                    .getInstance()
+                    .send("-;RCSd;AUTH;{" + TCPClientApplication.getInstance().server!!.username + "};" + TCPClientApplication.getInstance().server!!.password)
                 mAdapter.notifyDataSetChanged()
             }
         }
     }
 
     private fun onGlobalAuth(parsed: ArrayList<String>) {
-        if (parsed[3].uppercase() == "OK") {
-            arrayList.add(getString(R.string.sc_auth_ok))
-            arrayList.add(getString(R.string.sc_getting_ors))
-            TCPClientApplication.getInstance().loadModules()
-        } else {
-            arrayList.add(getString(R.string.sc_auth_err))
-            if (parsed.size >= 5)
-                arrayList.add(parsed.get(4))
-            handler.post {
-                _binding?.serverLoadBar?.visibility = View.GONE
-            }
-            if (parsed.size >= 5)
-                editLogin(parsed.get(4))
-            else
-                editLogin(getString(R.string.sc_auth_err))
-        }
         handler.post {
+            if (!isAdded) return@post
+            if (parsed[3].uppercase() == "OK") {
+                arrayList.add(getString(R.string.sc_auth_ok))
+                arrayList.add(getString(R.string.sc_getting_ors))
+                TCPClientApplication.getInstance().loadModules()
+            } else {
+                arrayList.add(getString(R.string.sc_auth_err))
+                if (parsed.size >= 5)
+                    arrayList.add(parsed.get(4))
+                _binding?.serverLoadBar?.visibility = View.GONE
+                if (parsed.size >= 5)
+                    editLogin(parsed.get(4))
+                else
+                    editLogin(getString(R.string.sc_auth_err))
+            }
             mAdapter.notifyDataSetChanged()
         }
     }
@@ -176,8 +174,9 @@ class ServerConnector : Fragment(), TCPClientResponse,
     }
 
     private fun onDisconnect() {
-        arrayList.add(getString(R.string.disconnected))
         handler.post {
+            if (!isAdded) return@post
+            arrayList.add(getString(R.string.disconnected))
             _binding?.serverLoadBar?.visibility = View.GONE
             mAdapter.notifyDataSetChanged()
         }
@@ -216,6 +215,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
 
     override fun onLoginClicked() {
         handler.post {
+            if (!isAdded) return@post
             arrayList.add(getString(R.string.sc_authorizing))
             mAdapter.notifyDataSetChanged()
             _binding?.serverLoadBar?.visibility = View.VISIBLE
