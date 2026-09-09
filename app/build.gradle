@@ -4,11 +4,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 android {
     namespace 'kmzbrnoI.hjoprcsdebugger'
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId "kmzbrnoI.hjoprcsdebugger"
         minSdkVersion 21
-        targetSdkVersion 36
+        targetSdkVersion 37
         versionCode 4
         versionName "1.3"
     }
