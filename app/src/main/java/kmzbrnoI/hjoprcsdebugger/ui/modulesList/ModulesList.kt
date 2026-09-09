@@ -114,6 +114,7 @@ class ModulesList: Fragment(), ModuleResponse {
         modulesList.clear()
 
         handler.post {
+            if (_binding == null) return@post
             mAdapter.clear()
             mAdapter.notifyDataSetChanged()
         }
@@ -124,6 +125,8 @@ class ModulesList: Fragment(), ModuleResponse {
         modulesList = parseModules(modules)
 
         handler.post {
+            val binding = _binding ?: return@post
+            mAdapter.clear()
             mAdapter.addAll(getModulesStrings(modulesList))
             mAdapter.notifyDataSetChanged()
             binding.modulesSwipeRefreshLayout.isRefreshing = false
@@ -155,6 +158,8 @@ class ModulesList: Fragment(), ModuleResponse {
     }
 
     override fun response(parsed: ArrayList<String>) {
+        if (!isAdded) return
+        if (parsed.size < 7) return
         if (parsed[5].uppercase() == "I") {
             selectedModuleInputs = parsed[6]
         } else if (parsed[5].uppercase() == "O") {
@@ -166,16 +171,22 @@ class ModulesList: Fragment(), ModuleResponse {
             intent.putExtra("inputs", selectedModuleInputs)
             intent.putExtra("outputs", selectedModuleOutputs)
             selectedIndex?.let { index ->
-                intent.putExtra("inputsTypes", modulesList[index].inputTypes)
-                intent.putExtra("outputsTypes", modulesList[index].outputTypes)
-                intent.putExtra("nameOfModule", modulesList[index].name)
-                intent.putExtra("addressOfModule", modulesList[index].address)
+                if (index < modulesList.size) {
+                    intent.putExtra("inputsTypes", modulesList[index].inputTypes)
+                    intent.putExtra("outputsTypes", modulesList[index].outputTypes)
+                    intent.putExtra("nameOfModule", modulesList[index].name)
+                    intent.putExtra("addressOfModule", modulesList[index].address)
+                }
             }
 
             val tcp = TCPClientApplication.getInstance()
             tcp.delegateModuleResponse = null
 
-            startActivity(intent)
+            handler.post {
+                if (isAdded) {
+                    startActivity(intent)
+                }
+            }
         }
 
     }
@@ -192,6 +203,9 @@ class ModulesList: Fragment(), ModuleResponse {
         super.onDestroyView()
         if (TCPClientApplication.getInstance().activityContext == context) {
             TCPClientApplication.getInstance().activityContext = null
+        }
+        if (TCPClientApplication.getInstance().delegateModuleResponse == this) {
+            TCPClientApplication.getInstance().delegateModuleResponse = null
         }
         _binding = null
     }
