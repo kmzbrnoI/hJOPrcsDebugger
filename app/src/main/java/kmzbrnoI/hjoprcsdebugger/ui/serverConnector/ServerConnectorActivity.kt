@@ -2,6 +2,7 @@ package kmzbrnoI.hjoprcsdebugger.ui.serverConnector
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import kmzbrnoI.hjoprcsdebugger.BuildConfig
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 
@@ -9,6 +10,7 @@ class ServerConnectorActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.server_connector_activity)
+        setTitle(getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
