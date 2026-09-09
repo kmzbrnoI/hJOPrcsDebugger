@@ -17,8 +17,7 @@ import kmzbrnoI.hjoprcsdebugger.models.Server
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kmzbrnoI.hjoprcsdebugger.ui.modulesList.ModulesListActivity
-import kotlinx.android.synthetic.main.server_connector.*
-import kotlinx.android.synthetic.main.server_connector.view.*
+import kmzbrnoI.hjoprcsdebugger.databinding.ServerConnectorBinding
 import java.util.*
 
 class ServerConnector : Fragment(), TCPClientResponse,
@@ -26,6 +25,8 @@ class ServerConnector : Fragment(), TCPClientResponse,
     private var arrayList: ArrayList<String> = ArrayList()
     lateinit var mAdapter: ArrayAdapter<String>
     private var handler: Handler = Handler()
+    private var _binding: ServerConnectorBinding? = null
+    val binding get() = _binding!!
 
     val serverSupportedVersions = arrayOf("1.0", "1.1")
 
@@ -33,21 +34,23 @@ class ServerConnector : Fragment(), TCPClientResponse,
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
+
     ): View? {
         retainInstance = true
 
         TCPClientApplication.getInstance().activityContext = context
 
-        val view = inflater.inflate(R.layout.server_connector, container, false).apply {
-            server_loadBar.visibility = View.VISIBLE
+        _binding = ServerConnectorBinding.inflate(inflater, container, false)
+        binding.apply {
+            serverLoadBar.visibility = View.VISIBLE
             mAdapter = ArrayAdapter(
-                context,
+                requireContext(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, arrayList
             )
-            connector_list.adapter = mAdapter
+            connectorList.adapter = mAdapter
         }
 
-        return view
+        return binding.root
     }
 
     override fun onResume() {
@@ -105,7 +108,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
         arrayList.add(getString(R.string.sc_done))
         handler.post {
             mAdapter.notifyDataSetChanged()
-            server_loadBar.visibility = View.GONE
+            _binding?.serverLoadBar?.visibility = View.GONE
         }
 
         val intent = Intent(context, ModulesListActivity::class.java)
@@ -132,7 +135,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
         if (TCPClientApplication.getInstance().server!!.username.isEmpty() || TCPClientApplication.getInstance().server!!.password.isEmpty()) {
             arrayList.add(getString(R.string.sc_auth_wait))
             handler.post {
-                server_loadBar.visibility = View.GONE
+                _binding?.serverLoadBar?.visibility = View.GONE
             }
             editLogin(getString(R.string.login_enter))
         } else {
@@ -147,7 +150,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
     }
 
     private fun onGlobalAuth(parsed: ArrayList<String>) {
-        if (parsed[3].toUpperCase() == "OK") {
+        if (parsed[3].uppercase() == "OK") {
             arrayList.add(getString(R.string.sc_auth_ok))
             arrayList.add(getString(R.string.sc_getting_ors))
             TCPClientApplication.getInstance().loadModules()
@@ -156,7 +159,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
             if (parsed.size >= 5)
                 arrayList.add(parsed.get(4))
             handler.post {
-                server_loadBar.visibility = View.GONE
+                _binding?.serverLoadBar?.visibility = View.GONE
             }
             if (parsed.size >= 5)
                 editLogin(parsed.get(4))
@@ -175,7 +178,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
     private fun onDisconnect() {
         arrayList.add(getString(R.string.disconnected))
         handler.post {
-            server_loadBar.visibility = View.GONE
+            _binding?.serverLoadBar?.visibility = View.GONE
             mAdapter.notifyDataSetChanged()
         }
     }
@@ -215,7 +218,12 @@ class ServerConnector : Fragment(), TCPClientResponse,
         handler.post {
             arrayList.add(getString(R.string.sc_authorizing))
             mAdapter.notifyDataSetChanged()
-            server_loadBar.visibility = View.VISIBLE
+            _binding?.serverLoadBar?.visibility = View.VISIBLE
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

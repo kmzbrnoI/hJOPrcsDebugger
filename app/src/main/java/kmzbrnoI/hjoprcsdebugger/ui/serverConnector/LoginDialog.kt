@@ -10,10 +10,12 @@ import kmzbrnoI.hjoprcsdebugger.helpers.HashHelper
 import kmzbrnoI.hjoprcsdebugger.responses.LoginDialogResponse
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
-import kotlinx.android.synthetic.main.user_login.view.*
+import kmzbrnoI.hjoprcsdebugger.databinding.UserLoginBinding
 
 class LoginDialog(private var message: String) : DialogFragment() {
     var delegate: LoginDialogResponse? = null
+    private var _binding: UserLoginBinding? = null
+    val binding get() = _binding!!
 
     companion object {
         const val TAG = "LoginDialogTag"
@@ -26,9 +28,10 @@ class LoginDialog(private var message: String) : DialogFragment() {
     ): View? {
         retainInstance = true
 
-        return inflater.inflate(R.layout.user_login, container, false).apply {
+        _binding = UserLoginBinding.inflate(inflater, container, false)
+        binding.apply {
             //set dialog component
-            tv_note.text = message
+            tvNote.text = message
 
             dialogName.setText(TCPClientApplication.getInstance().server?.username)
             dialogPasswd.setText("")
@@ -71,5 +74,11 @@ class LoginDialog(private var message: String) : DialogFragment() {
                 dismiss()
             }
         }
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

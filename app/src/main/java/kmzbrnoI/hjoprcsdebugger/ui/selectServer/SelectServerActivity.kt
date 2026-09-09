@@ -12,8 +12,8 @@ import androidx.viewpager.widget.ViewPager
 import kmzbrnoI.hjoprcsdebugger.BuildConfig
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
+import kmzbrnoI.hjoprcsdebugger.databinding.ServerPagerActivityBinding
 import kmzbrnoI.hjoprcsdebugger.ui.createServer.CreateServerActivity
-import kotlinx.android.synthetic.main.server_pager_activity.*
 
 
 /**
@@ -26,22 +26,24 @@ class SelectServerActivity : AppCompatActivity() {
     private lateinit var tabTitles: ArrayList<String>
 
     private lateinit var mPager: ViewPager
+    private lateinit var binding: ServerPagerActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.server_pager_activity)
-        mPager = findViewById(R.id.servers_pager)
+        binding = ServerPagerActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        mPager = binding.serversPager
         setTitle(getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME)
 
         tabTitles = arrayListOf(getString(R.string.discovered_servers), getString(R.string.saved_servers))
 
         // The pager adapter, which provides the pages to the view pager widget.
         val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-        servers_pager.adapter = pagerAdapter
+        binding.serversPager.adapter = pagerAdapter
 
-        servers_tabs.setupWithViewPager(servers_pager)
+        binding.serversTabs.setupWithViewPager(binding.serversPager)
 
-        create_new_server_button.setOnClickListener{
+        binding.createNewServerButton.setOnClickListener{
             val intent = Intent(this, CreateServerActivity::class.java)
             startActivityForResult(intent, STORED_SERVERS_RELOAD)
         }

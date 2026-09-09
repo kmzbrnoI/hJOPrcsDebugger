@@ -14,18 +14,19 @@ import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
+import kmzbrnoI.hjoprcsdebugger.databinding.SelectFoundServerBinding
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.constants.FOUND_SERVERS_RELOAD
 import kmzbrnoI.hjoprcsdebugger.constants.REQUEST_WIFI_PERMISSION
 import kmzbrnoI.hjoprcsdebugger.responses.UDPDiscoverResponse
 import kmzbrnoI.hjoprcsdebugger.network.UDPDiscover
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
-import kotlinx.android.synthetic.main.select_found_server.*
-import kotlinx.android.synthetic.main.select_found_server.view.*
 import java.util.ArrayList
 
 class FoundServers : Fragment(), UDPDiscoverResponse {
     private var foundServersAdapter: ArrayAdapter<String>? = null
+    private var _binding: SelectFoundServerBinding? = null
+    val binding get() = _binding!!
 
     var found: ArrayList<String> = ArrayList()
 
@@ -60,26 +61,27 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             }
         }
 
-        return inflater.inflate(R.layout.select_found_server, container, false).apply {
+        _binding = SelectFoundServerBinding.inflate(inflater, container, false)
+        binding.apply {
             foundServersAdapter = ArrayAdapter(
-                context,
+                requireContext(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, found
             )
-            found_servers_list_view.adapter = foundServersAdapter
+            foundServersListView.adapter = foundServersAdapter
 
             updateFoundServers()
 
-            found_servers_list_view.setOnItemClickListener { _, _, position, _ ->
+            foundServersListView.setOnItemClickListener { _, _, position, _ ->
                 ServerDb.getInstance().let { ServerDbInstance ->
                     if (ServerDbInstance.found[position].active) {
-                        connectToServer(context, position)
+                        connectToServer(requireContext(), position)
                     } else {
-                        AlertDialog.Builder(context)
+                        AlertDialog.Builder(requireContext())
                             .setMessage(R.string.conn_server_offline)
                             .setPositiveButton(
                                 getString(R.string.yes)
                             ) { _, _ ->
-                                connectToServer(context, position)
+                                connectToServer(requireContext(), position)
                             }
                             .setNegativeButton(
                                 getString(R.string.no)
@@ -90,10 +92,11 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
                 }
             }
 
-            swipe_refresh_layout.setOnRefreshListener {
+            swipeRefreshLayout.setOnRefreshListener {
                 discoverServers()
             }
         }
+        return binding.root
     }
 
     private fun checkWifi(): Boolean {
@@ -102,7 +105,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             val wifiManager = c.getSystemService(Context.WIFI_SERVICE) as WifiManager
             isWifiEnabled = wifiManager.isWifiEnabled
             if (!isWifiEnabled) {
-                AlertDialog.Builder(context)
+                AlertDialog.Builder(requireContext())
                     .setMessage(R.string.turn_on_wifi)
                     .setPositiveButton(getString(R.string.ok)) { _, _ -> }
                     .setCancelable(false)
@@ -138,7 +141,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
             found.clear()
             foundServersAdapter?.notifyDataSetChanged()
         } else {
-            swipe_refresh_layout?.isRefreshing = false
+            _binding?.swipeRefreshLayout?.isRefreshing = false
         }
     }
 
@@ -158,7 +161,7 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
 
         handler.post {
             foundServersAdapter?.notifyDataSetChanged()
-            swipe_refresh_layout?.isRefreshing = false
+            _binding?.swipeRefreshLayout?.isRefreshing = false
         }
     }
 
@@ -168,5 +171,10 @@ class FoundServers : Fragment(), UDPDiscoverResponse {
                 updateFoundServers()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

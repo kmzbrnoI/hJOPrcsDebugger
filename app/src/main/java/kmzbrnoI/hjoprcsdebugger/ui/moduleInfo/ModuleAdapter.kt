@@ -17,6 +17,7 @@ import kmzbrnoI.hjoprcsdebugger.constants.SCOMTypes
 import kmzbrnoI.hjoprcsdebugger.constants.getSCOMTypesStrings
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
+import kmzbrnoI.hjoprcsdebugger.databinding.ModuleRowBinding
 
 class ModuleAdapter(
     private var context: Context?,
@@ -56,8 +57,8 @@ class ModuleAdapter(
             outputsChanged.add(false)
         }
 
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.module_row, parent, false)
-        return ModuleViewHolder(view)
+        val binding = ModuleRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ModuleViewHolder(binding)
     }
 
     override fun getItemCount(): Int = inputsList.size
@@ -66,7 +67,7 @@ class ModuleAdapter(
         holder.bind(position, inputsList[position], outputsList[position], inputsTypes[position], outputsTypes[position], inputsChanged[position], outputsChanged[position])
     }
 
-    private fun onItemClicked(view: View, position: Int) {
+    private fun onItemClicked(binding: ModuleRowBinding, position: Int) {
         if (outputsTypes[position] == "I") {
             var newValue = ""
 
@@ -76,7 +77,7 @@ class ModuleAdapter(
                 newValue = "0"
             }
 
-            view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+            binding.output.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.yellow))
             TCPClientApplication.getInstance().changeOutput(position, newValue)
             requestWasSend = true
         } else if (outputsTypes[position] == "B") {
@@ -86,7 +87,7 @@ class ModuleAdapter(
                 newValue = "1"
             }
 
-            view.output.setBackgroundColor(ContextCompat.getColor(view.context, R.color.yellow))
+            binding.output.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.yellow))
             TCPClientApplication.getInstance().changeOutput(position, newValue)
             requestWasSend = true
         } else if (outputsTypes[position] == "S") {
@@ -111,7 +112,7 @@ class ModuleAdapter(
                     if (outputsList[position] != selectedOption.toString()) {
                         TCPClientApplication.getInstance().changeOutput(position, selectedOption.toString())
                         requestWasSend = true
-                        view.output.setBackgroundColor(ContextCompat.getColor(view.context,  R.color.yellow))
+                        binding.output.setBackgroundColor(ContextCompat.getColor(binding.root.context,  R.color.yellow))
                     }
 
                     dialog.dismiss()
@@ -183,7 +184,7 @@ class ModuleAdapter(
         }
     }
 
-    inner class ModuleViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
+    inner class ModuleViewHolder(private val binding: ModuleRowBinding): RecyclerView.ViewHolder(binding.root) {
 
         private fun getColor(value: String, type: String): Int {
             var color = R.color.black
@@ -217,15 +218,15 @@ class ModuleAdapter(
 
         @SuppressLint("SetTextI18n")
         fun bind(position: Int, inputValue: String, outputValue: String, inputType: String, outputType: String, inputHasChanged: Boolean, outputHasChanged: Boolean) {
-            view.row_index.text = "${position}:"
+            binding.rowIndex.text = "${position}:"
 
-            view.input.setBackgroundColor(getColor(inputValue, inputType))
-            view.output.setBackgroundColor(getColor(outputValue, outputType))
+            binding.input.setBackgroundColor(getColor(inputValue, inputType))
+            binding.output.setBackgroundColor(getColor(outputValue, outputType))
 
-            view.input_wrapper.setBackgroundColor(getWrapperColor(inputHasChanged))
-            view.output_wrapper.setBackgroundColor(getWrapperColor(outputHasChanged))
+            binding.inputWrapper.setBackgroundColor(getWrapperColor(inputHasChanged))
+            binding.outputWrapper.setBackgroundColor(getWrapperColor(outputHasChanged))
 
-            view.output.setOnClickListener { view -> onItemClicked(view, position) }
+            binding.output.setOnClickListener { onItemClicked(binding, position) }
         }
     }
 }

@@ -13,16 +13,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.STORED_SERVERS_RELOAD
+import kmzbrnoI.hjoprcsdebugger.databinding.SelectStoredServerBinding
 import kmzbrnoI.hjoprcsdebugger.responses.CreateServerDialogResponse
 import kmzbrnoI.hjoprcsdebugger.responses.ServerDbResponse
 import kmzbrnoI.hjoprcsdebugger.ui.serverConnector.ServerConnectorActivity
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 import kmzbrnoI.hjoprcsdebugger.ui.createServer.CreateServer
-import kotlinx.android.synthetic.main.select_stored_server.view.*
 import java.util.ArrayList
 
 class StoredServers : Fragment(), ServerDbResponse {
     lateinit var storedServersAdapter: ArrayAdapter<String>
+    private var _binding: SelectStoredServerBinding? = null
+    val binding get() = _binding!!
 
     var stored: ArrayList<String> = ArrayList()
 
@@ -37,26 +39,27 @@ class StoredServers : Fragment(), ServerDbResponse {
 
         ServerDb.getInstance(sp)
 
-        return inflater.inflate(R.layout.select_stored_server, container, false).apply {
+        _binding = SelectStoredServerBinding.inflate(inflater, container, false)
+        binding.apply {
             storedServersAdapter = ArrayAdapter(
-                context,
+                requireContext(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, stored
             )
-            stored_servers_list_view.adapter = storedServersAdapter
+            storedServersListView.adapter = storedServersAdapter
 
             updateStoredServers()
 
-            stored_servers_list_view.setOnItemClickListener { _, _, position, _ ->
+            storedServersListView.setOnItemClickListener { _, _, position, _ ->
                 ServerDb.getInstance().let { ServerDbInstance ->
                     if (ServerDbInstance.stored[position].active) {
-                        connectToServer(context, position)
+                        connectToServer(requireContext(), position)
                     } else {
-                        AlertDialog.Builder(context)
+                        AlertDialog.Builder(requireContext())
                             .setMessage(R.string.conn_server_offline)
                             .setPositiveButton(
                                 getString(R.string.yes)
                             ) { _, _ ->
-                                connectToServer(context, position)
+                                connectToServer(requireContext(), position)
                             }
                             .setNegativeButton(
                                 getString(R.string.no)
@@ -67,26 +70,32 @@ class StoredServers : Fragment(), ServerDbResponse {
                 }
             }
 
-            stored_servers_list_view.setOnItemLongClickListener { _, _, position, _ ->
-                stored_servers_list_view.getChildAt(position - stored_servers_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
-                AlertDialog.Builder(context)
+            storedServersListView.setOnItemLongClickListener { _, _, position, _ ->
+                storedServersListView.getChildAt(position - storedServersListView.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLighten))
+                AlertDialog.Builder(requireContext())
                     .setMessage(R.string.delete_server_alert)
                     .setPositiveButton(
                         getString(R.string.yes)
                     ) { _, _ ->
                         removeServer(position)
-                        stored_servers_list_view.getChildAt(position - stored_servers_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        storedServersListView.getChildAt(position - storedServersListView.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.transparent))
                     }
                     .setNegativeButton(
                         getString(R.string.no)
                     ) { _, _ ->
-                        stored_servers_list_view.getChildAt(position - stored_servers_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        storedServersListView.getChildAt(position - storedServersListView.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.transparent))
                     }
                     .setCancelable(false)
                     .show()
                 true
             }
         }
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun removeServer(position: Int) {
