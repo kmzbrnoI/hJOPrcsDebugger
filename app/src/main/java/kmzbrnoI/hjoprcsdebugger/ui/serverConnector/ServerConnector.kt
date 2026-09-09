@@ -3,6 +3,7 @@ package kmzbrnoI.hjoprcsdebugger.ui.serverConnector
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +25,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
     LoginDialogResponse {
     private var arrayList: ArrayList<String> = ArrayList()
     lateinit var mAdapter: ArrayAdapter<String>
-    private var handler: Handler = Handler()
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private var _binding: ServerConnectorBinding? = null
     val binding get() = _binding!!
 
@@ -33,11 +34,8 @@ class ServerConnector : Fragment(), TCPClientResponse,
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-
-    ): View? {
-        retainInstance = true
-
+        savedInstanceState: Bundle?,
+    ): View {
         TCPClientApplication.getInstance().activityContext = context
 
         _binding = ServerConnectorBinding.inflate(inflater, container, false)
@@ -62,7 +60,6 @@ class ServerConnector : Fragment(), TCPClientResponse,
         val extras = activity?.intent?.extras
         val tcp = TCPClientApplication.getInstance()
         tcp.delegateTCPResponse = this
-        val server: Server
 
         if (tcp.connected())
             tcp.disconnect()
@@ -70,10 +67,10 @@ class ServerConnector : Fragment(), TCPClientResponse,
         if (extras != null) {
             val type = extras.getString("serverType")
             val id = extras.getInt("serverId")
-            if (type == "stored")
-                server = ServerDb.getInstance().stored.get(id)
+            val server: Server = if (type == "stored")
+                ServerDb.getInstance().stored[id]
             else
-                server = ServerDb.getInstance().found.get(id)
+                ServerDb.getInstance().found[id]
 
             try {
                 Thread { tcp.connect(server) }.start()
@@ -97,11 +94,9 @@ class ServerConnector : Fragment(), TCPClientResponse,
             if (!isAdded) return@post
             val dialog = LoginDialog(message)
             dialog.delegate = this
-            val transition = fragmentManager?.beginTransaction()
+            val transition = parentFragmentManager.beginTransaction()
 
-            if (transition != null) {
-                dialog.show(transition, LoginDialog.TAG)
-            }
+            dialog.show(transition, LoginDialog.TAG)
         }
     }
 
@@ -126,7 +121,7 @@ class ServerConnector : Fragment(), TCPClientResponse,
     private fun onHandShake(parsed: ArrayList<String>) {
         handler.post {
             if (!isAdded) return@post
-            if (parsed.size < 3 || !listOf(*serverSupportedVersions).contains(parsed[2])) {
+            if (parsed.size < 3 || !(listOf(*serverSupportedVersions).contains(parsed[2]))) {
                 arrayList.add(getString(R.string.sc_version_warning))
             } else {
                 arrayList.add(getString(R.string.sc_connection_ok))
@@ -158,10 +153,10 @@ class ServerConnector : Fragment(), TCPClientResponse,
             } else {
                 arrayList.add(getString(R.string.sc_auth_err))
                 if (parsed.size >= 5)
-                    arrayList.add(parsed.get(4))
+                    arrayList.add(parsed[4])
                 _binding?.serverLoadBar?.visibility = View.GONE
                 if (parsed.size >= 5)
-                    editLogin(parsed.get(4))
+                    editLogin(parsed[4])
                 else
                     editLogin(getString(R.string.sc_auth_err))
             }

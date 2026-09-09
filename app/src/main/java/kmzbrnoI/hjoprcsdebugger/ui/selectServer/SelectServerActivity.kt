@@ -1,10 +1,9 @@
 package kmzbrnoI.hjoprcsdebugger.ui.selectServer
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -29,12 +28,18 @@ class SelectServerActivity : AppCompatActivity() {
     private lateinit var mPager: ViewPager
     private lateinit var binding: ServerPagerActivityBinding
 
+    private val createServerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        for (fragment in supportFragmentManager.fragments) {
+            fragment.onActivityResult(STORED_SERVERS_RELOAD, it.resultCode, it.data)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ServerPagerActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mPager = binding.serversPager
-        setTitle(getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME)
+        title = getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME
 
         tabTitles = arrayListOf(getString(R.string.discovered_servers), getString(R.string.saved_servers))
 
@@ -46,12 +51,12 @@ class SelectServerActivity : AppCompatActivity() {
 
         binding.createNewServerButton.setOnClickListener{
             val intent = Intent(this, CreateServerActivity::class.java)
-            startActivityForResult(intent, STORED_SERVERS_RELOAD)
+            createServerLauncher.launch(intent)
         }
 
         val callback = object : OnBackPressedCallback(mPager.currentItem > 0) {
             override fun handleOnBackPressed() {
-                mPager.currentItem = mPager.currentItem - 1
+                mPager.currentItem -= 1
             }
         }
         onBackPressedDispatcher.addCallback(this, callback)
@@ -67,7 +72,7 @@ class SelectServerActivity : AppCompatActivity() {
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
      * sequence.
      */
-    private inner class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+    private inner class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getCount(): Int = NUM_PAGES
 
         override fun getItem(position: Int): Fragment {
@@ -82,16 +87,8 @@ class SelectServerActivity : AppCompatActivity() {
             return FoundServers()
         }
 
-        override fun getPageTitle(position: Int): CharSequence? {
+        override fun getPageTitle(position: Int): CharSequence {
             return tabTitles[position]
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        for (fragment in supportFragmentManager.fragments) {
-            fragment.onActivityResult(requestCode, resultCode, data)
         }
     }
 }

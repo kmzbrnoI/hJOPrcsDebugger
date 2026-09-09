@@ -34,31 +34,29 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
     }
 
     fun disconnect() {
-        disconnect(true, true)
+        disconnect(waitRead = true, waitWrite = true)
     }
 
-    fun disconnect(wait_read: Boolean, wait_write: Boolean) {
+    fun disconnect(waitRead: Boolean, waitWrite: Boolean) {
         mRun = false
         if (socket != null) {
             try {
                 socket!!.close()
 
-                if (wait_write) {
+                if (waitWrite) {
                     wt!!.interrupt()
                     try {
                         wt!!.join()
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
+                    } catch (_: InterruptedException) {
                     }
 
                 }
 
-                if (wait_read) {
+                if (waitRead) {
                     rt!!.interrupt()
                     try {
                         rt!!.join()
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
+                    } catch (_: InterruptedException) {
                     }
 
                 }
@@ -142,14 +140,14 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
                 while (!isInterrupted && !m_socket.isClosed) {
                     try {
                         condition.await()
-                    } catch (ex: InterruptedException) {
+                    } catch (_: InterruptedException) {
                     }
 
                     for (data in m_queue) {
                         try {
                             str.write(data)
 
-                        } catch (e: IOException) {
+                        } catch (_: IOException) {
                             disconnect(true, false)
                             m_events.onDisconnected()
                             return
@@ -176,8 +174,8 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
 
         override fun start() {
             val buffer = ByteArray(8192)
-            var total_len = 0
-            var new_len: Int
+            var totalLen = 0
+            var newLen: Int
 
             val str: InputStream
             try {
@@ -191,38 +189,37 @@ class TCPClient(ip: String, port: Int, var delegate: TCPClientResponse?) {
 
             while (!isInterrupted && !m_socket.isClosed) {
                 try {
-                    new_len = str.read(buffer, total_len, 8192 - total_len)
-                    if (new_len == 0)
+                    newLen = str.read(buffer, totalLen, 8192 - totalLen)
+                    if (newLen == 0)
                         continue
-                    else if (new_len == -1) {
+                    else if (newLen == -1) {
                         disconnect(false, true)
                         m_events.onDisconnected()
                         return
                     }
 
-                    total_len += new_len
+                    totalLen += newLen
 
                     var last = 0
-                    for (i in 0 until total_len) {
-                        if (buffer[i] == '\n'.toByte()) {
-                            val range = Arrays.copyOfRange(buffer, last, i)
+                    for (i in 0 until totalLen) {
+                        if (buffer[i] == '\n'.code.toByte()) {
+                            val range = buffer.copyOfRange(last, i)
 
-                            val end: Int
-                            if (i > 0 && buffer[i - 1] == '\r'.toByte())
-                                end = i - 1 - last
+                            val end = if (i > 0 && buffer[i - 1] == '\r'.code.toByte())
+                                i - 1 - last
                             else
-                                end = i - last
+                                i - last
 
                             m_events.onMessageReceived(String(range, 0, end))
                             last = i + 1
                         }
                     }
 
-                    for (i in 0 until total_len - last)
+                    for (i in 0 until totalLen - last)
                         buffer[i] = buffer[i + last]
-                    total_len = total_len - last
-                } catch (e: IOException) {
-                    disconnect(false, true)
+                    totalLen -= last
+                } catch (_: IOException) {
+                    disconnect(waitRead = false, waitWrite = true)
                     m_events.onDisconnected()
                     return
                 }

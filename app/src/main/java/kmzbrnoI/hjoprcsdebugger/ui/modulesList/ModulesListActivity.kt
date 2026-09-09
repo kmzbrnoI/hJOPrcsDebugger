@@ -22,7 +22,7 @@ class ModulesListActivity: AppCompatActivity() {
                 .commit()
         }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(enabled = true) {
             override fun handleOnBackPressed() {
                 TCPClientApplication.getInstance().disconnectModule()
                 TCPClientApplication.getInstance().disconnect()

@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.*
@@ -24,7 +25,8 @@ class TCPClientApplication: Application(), TCPClient.Events {
     var server: Server? = null
     var module: Module? = null
 
-    var activityHandler: Handler = Handler()
+    var activityHandler: Handler = Handler(Looper.getMainLooper())
+    @SuppressLint("StaticFieldLeak")
     var activityContext: Context? = null
 
     internal var mTcpClient: TCPClient? = null
@@ -98,16 +100,14 @@ class TCPClientApplication: Application(), TCPClient.Events {
     }
 
     fun connected(): Boolean {
-        return mTcpClient != null && mTcpClient!!.connected()
+        return (mTcpClient?.connected()) ?: false
     }
 
     private fun showSafeDialog(message: String) {
         activityHandler.post {
             val context = activityContext
-            if (context is Activity) {
-                if (context.isFinishing || context.isDestroyed) {
-                    return@post
-                }
+            if (context is Activity && (context.isFinishing || context.isDestroyed)) {
+                return@post
             }
             context?.let { ctx ->
                 AlertDialog.Builder(ctx)
@@ -126,7 +126,7 @@ class TCPClientApplication: Application(), TCPClient.Events {
     override fun onMessageReceived(message: String) {
         val parsed = ParseHelper().parse(message, ";", "")
 
-        if (parsed.size < 2 || parsed.get(0) != "-") return
+        if (parsed.size < 2 || parsed[0] != "-") return
         parsed[1] = parsed[1].uppercase()
 
         if (parsed[1] == "HELLO") {
@@ -136,7 +136,7 @@ class TCPClientApplication: Application(), TCPClient.Events {
             delegateTCPResponse?.response(ON_RECEIVE_MODULES, parsed)
             delegateModuleResponse?.response(ON_RECEIVE_MODULES, parsed)
 
-        } else if (parsed[1] == "PING" && parsed.size > 2 && parsed[2].uppercase() == "REQ-RESP") {
+        } else if (parsed[1] == "PING" && parsed[2].uppercase() == "REQ-RESP") {
             if (parsed.size >= 4) {
                 this.send("-;PONG;" + parsed[3] + '\n'.toString())
             } else {
@@ -144,7 +144,6 @@ class TCPClientApplication: Application(), TCPClient.Events {
             }
 
         } else if (parsed[2] == "AUTH") {
-            if (parsed.size < 3) return
             delegateTCPResponse?.response(GLOBAL_AUTH, parsed)
 
         } else if (parsed[2] == "MODULE") {

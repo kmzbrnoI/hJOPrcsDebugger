@@ -11,7 +11,7 @@ class ServerConnectorActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.server_connector_activity)
-        setTitle(getString(R.string.app_name) + " v"+ BuildConfig.VERSION_NAME)
+        title = getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -22,7 +22,7 @@ class ServerConnectorActivity: AppCompatActivity() {
                 .commit()
         }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(enabled = true) {
             override fun handleOnBackPressed() {
                 TCPClientApplication.getInstance().disconnect()
                 finish()
