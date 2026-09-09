@@ -2,6 +2,7 @@ package kmzbrnoI.hjoprcsdebugger.ui.moduleInfo
 
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
@@ -24,19 +25,19 @@ class ModuleInfoActivity: AppCompatActivity() {
                 .replace(R.id.module_info_activity, module)
                 .commit()
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                TCPClientApplication.getInstance().disconnectModule()
+                module.adapter.sound?.release()
+                finish()
+            }
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
 
         return true
-    }
-
-    override fun onBackPressed() {
-        TCPClientApplication.getInstance().disconnectModule()
-        module.adapter.sound?.release()
-        finish()
-
-        super.onBackPressed()
     }
 }

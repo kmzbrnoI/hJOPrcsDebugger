@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -47,17 +48,19 @@ class SelectServerActivity : AppCompatActivity() {
             val intent = Intent(this, CreateServerActivity::class.java)
             startActivityForResult(intent, STORED_SERVERS_RELOAD)
         }
-    }
 
-    override fun onBackPressed() {
-        if (mPager.currentItem == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
-            super.onBackPressed()
-        } else {
-            // Otherwise, select the previous step.
-            mPager.currentItem = mPager.currentItem - 1
+        val callback = object : OnBackPressedCallback(mPager.currentItem > 0) {
+            override fun handleOnBackPressed() {
+                mPager.currentItem = mPager.currentItem - 1
+            }
         }
+        onBackPressedDispatcher.addCallback(this, callback)
+
+        mPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                callback.isEnabled = position > 0
+            }
+        })
     }
 
     /**
