@@ -12,17 +12,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kmzbrnoI.hjoprcsdebugger.R
 import kmzbrnoI.hjoprcsdebugger.constants.ON_RECEIVE_MODULES
+import kmzbrnoI.hjoprcsdebugger.databinding.ModulesListBinding
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kmzbrnoI.hjoprcsdebugger.models.Module
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.responses.ModuleResponse
 import kmzbrnoI.hjoprcsdebugger.ui.moduleInfo.ModuleInfoActivity
-import kotlinx.android.synthetic.main.module.*
-import kotlinx.android.synthetic.main.modules_list.*
-import kotlinx.android.synthetic.main.modules_list.view.*
 import kotlin.collections.ArrayList
 
 class ModulesList: Fragment(), ModuleResponse {
+    private var _binding: ModulesListBinding? = null
+    public val binding get() = _binding!!
+
     lateinit var modulesList: ArrayList<Module>
     lateinit var mAdapter: ArrayAdapter<String>
 
@@ -47,22 +48,23 @@ class ModulesList: Fragment(), ModuleResponse {
 
         modulesList = parseModules(extras?.getString("modules"))
 
-        return inflater.inflate(R.layout.modules_list, container, false).apply {
-            modules_list_overlay.visibility = View.GONE
-            modules_list_loadBar.visibility = View.GONE
+        _binding = ModulesListBinding.inflate(inflater, container, false)
+        _binding.apply {
+            binding.modulesListOverlay.visibility = View.GONE
+            binding.modulesListLoadBar.visibility = View.GONE
 
             mAdapter = ArrayAdapter(
-                context,
+                context!!,
                 android.R.layout.simple_list_item_1, android.R.id.text1, getModulesStrings(modulesList)
             )
-            modules_list_view.adapter = mAdapter
+            binding.modulesListView.adapter = mAdapter
 
-            modules_list_view.setOnItemClickListener { _, _, position, _ ->
+            binding.modulesListView.setOnItemClickListener { _, _, position, _ ->
                 connectToModule(position)
             }
 
-            modules_list_view.setOnItemLongClickListener { _, _, position, _ ->
-                modules_list_view.getChildAt( position - modules_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLighten))
+            binding.modulesListView.setOnItemLongClickListener { _, _, position, _ ->
+                binding.modulesListView.getChildAt( position - binding.modulesListView.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorPrimaryLighten))
                 AlertDialog.Builder(context)
                     .setMessage(getString(R.string.module_address) + ": " + modulesList[position].address + "\n"
                             + getString(R.string.module_name) + ": " + modulesList[position].name + "\n"
@@ -76,17 +78,19 @@ class ModulesList: Fragment(), ModuleResponse {
                     .setPositiveButton(
                         getString(R.string.ok)
                     ) { _, _ ->
-                        modules_list_view.getChildAt(position - modules_list_view.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        binding.modulesListView.getChildAt(position - binding.modulesListView.firstVisiblePosition)?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.transparent))
                     }
                     .setCancelable(true)
                     .show()
                 true
             }
 
-            modules_swipe_refresh_layout.setOnRefreshListener {
+            binding.modulesSwipeRefreshLayout.setOnRefreshListener {
                 reloadModules()
             }
         }
+
+        return binding.root
     }
 
     private fun getModulesStrings(modules: ArrayList<Module>): List<String> {
@@ -122,14 +126,14 @@ class ModulesList: Fragment(), ModuleResponse {
         handler.post {
             mAdapter.addAll(getModulesStrings(modulesList))
             mAdapter.notifyDataSetChanged()
-            modules_swipe_refresh_layout?.isRefreshing = false
+            binding.modulesSwipeRefreshLayout.isRefreshing = false
         }
     }
 
     override fun onResume() {
         super.onResume()
-        modules_list_overlay.visibility = View.GONE
-        modules_list_loadBar.visibility = View.GONE
+        binding.modulesListOverlay.visibility = View.GONE
+        binding.modulesListLoadBar.visibility = View.GONE
 
         val tcp = TCPClientApplication.getInstance()
         tcp.delegateModuleResponse = this
@@ -139,8 +143,8 @@ class ModulesList: Fragment(), ModuleResponse {
     }
 
     private fun connectToModule(index: Int) {
-        modules_list_overlay.visibility = View.VISIBLE
-        modules_list_loadBar.visibility = View.VISIBLE
+        binding.modulesListOverlay.visibility = View.VISIBLE
+        binding.modulesListLoadBar.visibility = View.VISIBLE
 
         selectedIndex = index
 

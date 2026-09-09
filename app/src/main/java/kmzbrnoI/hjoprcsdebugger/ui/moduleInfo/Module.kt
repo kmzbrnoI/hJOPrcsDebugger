@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import kmzbrnoI.hjoprcsdebugger.R
-import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
+import kmzbrnoI.hjoprcsdebugger.databinding.ModuleBinding
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
 import kmzbrnoI.hjoprcsdebugger.responses.ModuleResponse
-import kotlinx.android.synthetic.main.module.view.*
 
 class Module: Fragment(), ModuleResponse {
     public lateinit var adapter: ModuleAdapter
+    private var _binding: ModuleBinding? = null
+    public val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,6 +21,12 @@ class Module: Fragment(), ModuleResponse {
         savedInstanceState: Bundle?
     ): View? {
         retainInstance = true
+
+        _binding = ModuleBinding.inflate(inflater, container, false)
+        _binding.apply {
+            binding.modulesListView.layoutManager = LinearLayoutManager(context)
+            binding.modulesListView.adapter = adapter
+        }
 
         TCPClientApplication.getInstance().activityContext = context
 
@@ -42,10 +48,7 @@ class Module: Fragment(), ModuleResponse {
 
         adapter = ModuleAdapter(context, inputs, outputs, inputsTypes, outputsTypes)
 
-        return inflater.inflate(R.layout.module, container, false).apply {
-            modules_list_view.layoutManager = LinearLayoutManager(context)
-            modules_list_view.adapter = adapter
-        }
+        return binding.root;
     }
 
     private fun parseTypes(types: String?): ArrayList<String> {

@@ -17,7 +17,6 @@ import kmzbrnoI.hjoprcsdebugger.constants.SCOMTypes
 import kmzbrnoI.hjoprcsdebugger.constants.getSCOMTypesStrings
 import kmzbrnoI.hjoprcsdebugger.helpers.ParseHelper
 import kmzbrnoI.hjoprcsdebugger.network.TCPClientApplication
-import kotlinx.android.synthetic.main.module_row.view.*
 
 class ModuleAdapter(
     private var context: Context?,
