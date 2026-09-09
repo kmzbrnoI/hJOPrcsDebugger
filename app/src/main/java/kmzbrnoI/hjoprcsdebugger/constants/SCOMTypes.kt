@@ -15,8 +15,9 @@ val SCOMTypes = mapOf(
     11 to "Opakování návěsti volno",
     12 to "Opakování návěsti výstraha",
     13 to "Návěstidlo zhaslé",
-    14 to "Opak.návěsti očekávejte 40km/h",
-    15 to "Opak.návěsti očekávejte 40km/h"
+    14 to "Opak. očekávejte 40km/h",
+    15 to "40 km/h a opak. výstraha",
+    16 to "40 km/h a opak. oček. 40 km/h",
 )
 
 fun getSCOMTypesStrings(): Array<CharSequence> {
