@@ -11,7 +11,7 @@ import kmzbrnoI.hjoprcsdebugger.models.Server
 import kmzbrnoI.hjoprcsdebugger.storage.ServerDb
 
 class CreateServerActivity: AppCompatActivity() {
-    private lateinit var binding: NewServerActivityBinding;
+    private lateinit var binding: NewServerActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,11 +21,12 @@ class CreateServerActivity: AppCompatActivity() {
         if (savedInstanceState == null) {
             val fragment = CreateServer()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.new_server_activity, fragment)
+                .replace(R.id.new_server_container, fragment)
                 .commit()
         }
+        supportFragmentManager.executePendingTransactions()
 
-        val createServerFragment = supportFragmentManager.findFragmentById(R.id.new_server_fragment) as CreateServer;
+        val createServerFragment = supportFragmentManager.findFragmentById(R.id.new_server_container) as CreateServer
 
         binding.saveButton.setOnClickListener {
             val name = createServerFragment.binding.nameText.text.toString()
