@@ -65,4 +65,12 @@ class Module: Fragment(), ModuleResponse {
     }
 
     override fun response(output: Int, parsed: ArrayList<String>) {}
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (TCPClientApplication.getInstance().activityContext == context) {
+            TCPClientApplication.getInstance().activityContext = null
+        }
+        _binding = null
+    }
 }

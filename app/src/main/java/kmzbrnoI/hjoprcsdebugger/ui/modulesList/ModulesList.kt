@@ -187,5 +187,13 @@ class ModulesList: Fragment(), ModuleResponse {
             }
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (TCPClientApplication.getInstance().activityContext == context) {
+            TCPClientApplication.getInstance().activityContext = null
+        }
+        _binding = null
+    }
 }
 

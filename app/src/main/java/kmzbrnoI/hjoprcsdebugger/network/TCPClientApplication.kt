@@ -1,6 +1,7 @@
 package kmzbrnoI.hjoprcsdebugger.network
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
@@ -29,14 +30,13 @@ class TCPClientApplication: Application(), TCPClient.Events {
     internal var mTcpClient: TCPClient? = null
 
     companion object {
+        @Volatile
         private var instance: TCPClientApplication? = null
 
         fun getInstance(): TCPClientApplication {
-            if (instance == null) {
-                instance = TCPClientApplication()
+            return instance ?: synchronized(this) {
+                instance ?: TCPClientApplication().also { instance = it }
             }
-
-            return instance as TCPClientApplication
         }
     }
 
@@ -101,16 +101,26 @@ class TCPClientApplication: Application(), TCPClient.Events {
         return mTcpClient != null && mTcpClient!!.connected()
     }
 
-    override fun onDisconnected() {
+    private fun showSafeDialog(message: String) {
         activityHandler.post {
-            activityContext?.let { context ->
-                AlertDialog.Builder(context)
-                    .setMessage(R.string.disconnected)
-                    .setPositiveButton(context.getString(R.string.ok), null)
+            val context = activityContext
+            if (context is Activity) {
+                if (context.isFinishing || context.isDestroyed) {
+                    return@post
+                }
+            }
+            context?.let { ctx ->
+                AlertDialog.Builder(ctx)
+                    .setMessage(message)
+                    .setPositiveButton(ctx.getString(R.string.ok), null)
                     .setCancelable(false)
                     .show()
             }
         }
+    }
+
+    override fun onDisconnected() {
+        showSafeDialog(activityContext?.getString(R.string.disconnected) ?: "Disconnected")
     }
 
     override fun onMessageReceived(message: String) {
@@ -140,14 +150,8 @@ class TCPClientApplication: Application(), TCPClient.Events {
         } else if (parsed[2] == "MODULE") {
             delegateModuleResponse?.response(parsed)
         } else if (parsed[2] == "ERR") {
-            activityHandler.post {
-                activityContext?.let { context ->
-                    AlertDialog.Builder(context)
-                        .setMessage(parsed[3])
-                        .setPositiveButton(context.getString(R.string.ok), null)
-                        .setCancelable(false)
-                        .show()
-                }
+            if (parsed.size > 3) {
+                showSafeDialog(parsed[3])
             }
         }
     }
