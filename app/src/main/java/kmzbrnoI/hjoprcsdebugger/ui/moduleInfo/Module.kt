@@ -23,13 +23,9 @@ class Module: Fragment(), ModuleResponse {
         retainInstance = true
 
         _binding = ModuleBinding.inflate(inflater, container, false)
-        _binding.apply {
-            binding.modulesListView.layoutManager = LinearLayoutManager(context)
-            binding.modulesListView.adapter = adapter
-        }
+        binding.modulesListView.layoutManager = LinearLayoutManager(context)
 
         TCPClientApplication.getInstance().activityContext = context
-
         TCPClientApplication.getInstance().delegateModuleResponse = this
 
         val extras = activity?.intent?.extras
@@ -47,8 +43,9 @@ class Module: Fragment(), ModuleResponse {
         }
 
         adapter = ModuleAdapter(context, inputs, outputs, inputsTypes, outputsTypes)
+        binding.modulesListView.adapter = adapter
 
-        return binding.root;
+        return binding.root
     }
 
     private fun parseTypes(types: String?): ArrayList<String> {
